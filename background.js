@@ -46,7 +46,7 @@ async function findAITabs(ai1Type, ai2Type) {
       participant2Tab = tabs[1];
     }
   } else {
-    // Different AI types
+    // Different AI types - assign from their respective arrays
     participant1Tab = ai1Type === 'chatgpt' ? chatgptTabs[0] : geminiTabs[0];
     participant2Tab = ai2Type === 'chatgpt' ? chatgptTabs[0] : geminiTabs[0];
   }

@@ -101,7 +101,7 @@ startBtn.addEventListener('click', async () => {
   updateStatus('active', 'Debate Active');
   const ai1Name = ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
   const ai2Name = ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
-  addLog(`🚀 Debate started: ${ai1Name} vs ${ai2Name}` + (topic ? ` - "${topic}"` : ''));
+  addLog(`🚀 Debate started: ${ai1Name} vs ${ai2Name}${topic ? ` - "${topic}"` : ''}`);
 });
 
 // Stop debate
