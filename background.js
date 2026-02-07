@@ -33,14 +33,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 async function handleStartDebate(message, sendResponse) {
+  // Helper function to safely check URL
+  function isValidChatGPTUrl(url) {
+    if (!url) return false;
+    try {
+      const parsed = new URL(url);
+      return parsed.hostname === 'chatgpt.com' || parsed.hostname === 'chat.openai.com' ||
+             parsed.hostname === 'www.chatgpt.com' || parsed.hostname === 'www.chat.openai.com';
+    } catch {
+      return false;
+    }
+  }
+
+  function isValidGeminiUrl(url) {
+    if (!url) return false;
+    try {
+      const parsed = new URL(url);
+      return parsed.hostname === 'gemini.google.com' || parsed.hostname === 'www.gemini.google.com';
+    } catch {
+      return false;
+    }
+  }
+
   // Find ChatGPT and Gemini tabs
   const tabs = await chrome.tabs.query({});
-  chatgptTabId = tabs.find(tab => 
-    tab.url?.includes('chatgpt.com') || tab.url?.includes('chat.openai.com')
-  )?.id;
-  geminiTabId = tabs.find(tab => 
-    tab.url?.includes('gemini.google.com')
-  )?.id;
+  chatgptTabId = tabs.find(tab => isValidChatGPTUrl(tab.url))?.id;
+  geminiTabId = tabs.find(tab => isValidGeminiUrl(tab.url))?.id;
 
   if (!chatgptTabId || !geminiTabId) {
     sendResponse({ 
