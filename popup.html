@@ -1,58 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Debate Control</title>
+  <title>AI討論コントロール</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="container">
-    <h1>🤖 AI Debate</h1>
+    <h1>🤖 AI討論</h1>
     
     <div class="status-section">
       <div class="status-indicator" id="statusIndicator">
         <span class="status-dot"></span>
-        <span class="status-text" id="statusText">Ready</span>
+        <span class="status-text" id="statusText">準備完了</span>
       </div>
     </div>
 
     <div class="settings-section">
-      <h3>Settings</h3>
+      <h3>設定</h3>
       
       <div class="setting-item">
-        <label for="debateTopic">Topic (optional):</label>
-        <input type="text" id="debateTopic" placeholder="Enter debate topic...">
+        <label for="debateTopic">トピック（任意）:</label>
+        <input type="text" id="debateTopic" placeholder="討論のトピックを入力...">
       </div>
 
       <div class="setting-item">
-        <label for="turnLimit">Turn Limit:</label>
+        <label for="turnLimit">ターン数:</label>
         <input type="number" id="turnLimit" value="5" min="1" max="20">
       </div>
 
       <div class="setting-item">
-        <label for="delaySeconds">Delay (seconds):</label>
+        <label for="delaySeconds">遅延時間（秒）:</label>
         <input type="number" id="delaySeconds" value="3" min="1" max="30">
       </div>
     </div>
 
     <div class="instruction-section">
       <p class="instruction">
-        <strong>Setup:</strong>
-        <br>1. Open ChatGPT in one window
-        <br>2. Open Gemini in another window
-        <br>3. Arrange in split view
-        <br>4. Click Start Debate
+        <strong>セットアップ:</strong>
+        <br>1. ChatGPTを1つのウィンドウで開く
+        <br>2. Geminiを別のウィンドウで開く
+        <br>3. 分割表示に配置する
+        <br>4. 討論を開始をクリック
       </p>
     </div>
 
     <div class="control-section">
-      <button id="startBtn" class="btn btn-start">Start Debate</button>
-      <button id="stopBtn" class="btn btn-stop" disabled>Stop Debate</button>
+      <button id="startBtn" class="btn btn-start">討論を開始</button>
+      <button id="stopBtn" class="btn btn-stop" disabled>討論を停止</button>
     </div>
 
     <div class="log-section">
-      <h3>Activity Log</h3>
+      <h3>活動ログ</h3>
       <div id="activityLog" class="activity-log"></div>
     </div>
   </div>
