@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Debate Control</title>
+  <title>AIディベートコントロール</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="container">
-    <h1>🤖 AI Debate</h1>
+    <h1>🤖 AIディベート</h1>
     
     <div class="status-section">
       <div class="status-indicator" id="statusIndicator">
         <span class="status-dot"></span>
-        <span class="status-text" id="statusText">Ready</span>
+        <span class="status-text" id="statusText">準備完了</span>
       </div>
     </div>
 
     <div class="settings-section">
-      <h3>Settings</h3>
+      <h3>設定</h3>
       
       <div class="setting-item">
-        <label for="ai1Select">AI Participant 1:</label>
+        <label for="ai1Select">AI参加者1:</label>
         <select id="ai1Select">
           <option value="chatgpt">ChatGPT</option>
           <option value="gemini">Gemini</option>
@@ -29,7 +29,7 @@
       </div>
 
       <div class="setting-item">
-        <label for="ai2Select">AI Participant 2:</label>
+        <label for="ai2Select">AI参加者2:</label>
         <select id="ai2Select">
           <option value="gemini">Gemini</option>
           <option value="chatgpt">ChatGPT</option>
@@ -37,38 +37,38 @@
       </div>
 
       <div class="setting-item">
-        <label for="debateTopic">Topic (optional):</label>
-        <input type="text" id="debateTopic" placeholder="Enter debate topic...">
+        <label for="debateTopic">トピック（任意）:</label>
+        <input type="text" id="debateTopic" placeholder="ディベートのトピックを入力...">
       </div>
 
       <div class="setting-item">
-        <label for="turnLimit">Turn Limit:</label>
+        <label for="turnLimit">ターン制限:</label>
         <input type="number" id="turnLimit" value="5" min="1" max="20">
       </div>
 
       <div class="setting-item">
-        <label for="delaySeconds">Delay (seconds):</label>
+        <label for="delaySeconds">遅延時間（秒）:</label>
         <input type="number" id="delaySeconds" value="3" min="1" max="30">
       </div>
     </div>
 
     <div class="instruction-section">
       <p class="instruction">
-        <strong>Setup:</strong>
-        <br>1. Select AI models for both participants
-        <br>2. Open required AI tabs (can be same AI in different tabs)
-        <br>3. Arrange in split view
-        <br>4. Click Start Debate
+        <strong>セットアップ:</strong>
+        <br>1. 両方の参加者のAIモデルを選択
+        <br>2. 必要なAIタブを開く（同じAIを別タブで開くことも可能）
+        <br>3. 分割ビューで配置
+        <br>4. ディベート開始をクリック
       </p>
     </div>
 
     <div class="control-section">
-      <button id="startBtn" class="btn btn-start">Start Debate</button>
-      <button id="stopBtn" class="btn btn-stop" disabled>Stop Debate</button>
+      <button id="startBtn" class="btn btn-start">ディベート開始</button>
+      <button id="stopBtn" class="btn btn-stop" disabled>ディベート停止</button>
     </div>
 
     <div class="log-section">
-      <h3>Activity Log</h3>
+      <h3>アクティビティログ</h3>
       <div id="activityLog" class="activity-log"></div>
     </div>
   </div>

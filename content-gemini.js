@@ -171,7 +171,7 @@ function addIndicator() {
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   `;
-  indicator.textContent = '🤖 AI Debate Active';
+  indicator.textContent = '🤖 AIディベート実行中';
   document.body.appendChild(indicator);
 }
 

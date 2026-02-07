@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "AI Debate Extension",
+  "name": "AIディベート拡張機能",
   "version": "1.0.0",
-  "description": "Enable debates between AI systems: ChatGPT vs Gemini, ChatGPT vs ChatGPT, or Gemini vs Gemini",
+  "description": "AIシステム間のディベートを実現: ChatGPT vs Gemini、ChatGPT vs ChatGPT、またはGemini vs Gemini",
   "permissions": [
     "activeTab",
     "storage",

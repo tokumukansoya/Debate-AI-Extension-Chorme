@@ -1,142 +1,142 @@
-# ✨ Features Overview
+# ✨ 機能概要
 
-## Core Functionality
+## コア機能
 
-### 🔄 Automated Debate Flow
-- Automatically extracts AI responses from ChatGPT and Gemini
-- Sends responses from one AI to the other
-- Manages turn-taking between the two AIs
-- Continues until turn limit is reached or manually stopped
+### 🔄 自動化されたディベートフロー
+- ChatGPTとGeminiからAIの応答を自動的に抽出
+- 一方のAIから他方のAIへ応答を送信
+- 2つのAI間のターン管理
+- ターン制限に達するか手動で停止されるまで続行
 
-### 🎛️ Control Panel
-- Clean, intuitive popup interface
-- Real-time status indicator (Ready/Active/Stopped)
-- Activity log with timestamps
-- Start/Stop controls
+### 🎛️ コントロールパネル
+- クリーンで直感的なポップアップインターフェース
+- リアルタイムステータス表示（準備完了/実行中/停止）
+- タイムスタンプ付きアクティビティログ
+- 開始/停止コントロール
 
-### ⚙️ Customizable Settings
-- **Topic Input**: Optional starting prompt
-- **Turn Limit**: 1-20 exchanges (default: 5)
-- **Delay**: 1-30 seconds between responses (default: 3)
-- Settings are saved automatically
+### ⚙️ カスタマイズ可能な設定
+- **トピック入力**: オプションの開始プロンプト
+- **ターン制限**: 1-20回のやり取り（デフォルト: 5）
+- **遅延**: 応答間の1-30秒（デフォルト: 3）
+- 設定は自動的に保存されます
 
-### 📊 Activity Monitoring
-- Real-time activity log
-- Timestamped events
-- Clear status messages:
-  - 🚀 Debate started
-  - 📝 AI responded
-  - ➡️ Sending to other AI
-  - ✅ Debate completed
-  - 🛑 Stopped by user
-  - ❌ Errors
+### 📊 アクティビティ監視
+- リアルタイムアクティビティログ
+- タイムスタンプ付きイベント
+- 明確なステータスメッセージ：
+  - 🚀 ディベート開始
+  - 📝 AIが応答
+  - ➡️ 他のAIへ送信中
+  - ✅ ディベート完了
+  - 🛑 ユーザーによる停止
+  - ❌ エラー
 
-### 👁️ Visual Indicators
-- "🤖 AI Debate Active" badge on AI pages
-- Gradient design matching extension theme
-- Non-intrusive positioning
-- Always visible during active debates
+### 👁️ ビジュアルインジケーター
+- AIページ上の「🤖 AI Debate Active」バッジ
+- 拡張機能のテーマに合わせたグラデーションデザイン
+- 邪魔にならない配置
+- アクティブなディベート中は常に表示
 
-## Design Features
+## デザイン機能
 
-### 🎨 Clean UI
-- Gradient purple theme (#667eea to #764ba2)
-- Modern, minimalist design
-- Smooth animations and transitions
-- Professional look suitable for video recording
+### 🎨 クリーンなUI
+- グラデーションパープルテーマ（#667eea から #764ba2）
+- モダンでミニマリストなデザイン
+- スムーズなアニメーションとトランジション
+- ビデオ録画に適したプロフェッショナルな外観
 
-### 📱 Responsive Layout
-- Fixed 400px width for consistency
-- Scrollable activity log
-- Organized sections
-- Clear visual hierarchy
+### 📱 レスポンシブレイアウト
+- 一貫性のための固定400px幅
+- スクロール可能なアクティビティログ
+- 整理されたセクション
+- 明確な視覚的階層
 
-### 🖼️ Split-View Ready
-- Works seamlessly with side-by-side windows
-- Minimal screen space usage
-- Easy to position for recording
-- Both AI pages visible simultaneously
+### 🖼️ 分割ビュー対応
+- サイドバイサイドウィンドウでシームレスに動作
+- 最小限の画面スペース使用
+- 録画用に配置しやすい
+- 両方のAIページを同時に表示可能
 
-## Technical Features
+## 技術的機能
 
-### 🔒 Security
-- No data collection or tracking
-- All processing happens locally
-- Secure URL validation with proper parsing
-- Respects browser permissions model
+### 🔒 セキュリティ
+- データ収集やトラッキングなし
+- すべての処理はローカルで実行
+- 適切な解析による安全なURL検証
+- ブラウザの権限モデルに準拠
 
-### ⚡ Performance
-- Efficient content scripts
-- Minimal CPU usage when idle
-- Smart response detection
-- Stability checking for response completion
+### ⚡ パフォーマンス
+- 効率的なコンテンツスクリプト
+- アイドル時の最小限のCPU使用
+- スマートな応答検出
+- 応答完了の安定性チェック
 
-### 🔧 Compatibility
-- Chrome Manifest V3 compliant
-- Works with latest ChatGPT interface
-- Compatible with Gemini's UI
-- Handles multiple UI variations
+### 🔧 互換性
+- Chrome Manifest V3準拠
+- 最新のChatGPTインターフェースで動作
+- GeminiのUIと互換性あり
+- 複数のUIバリエーションに対応
 
-### 🛠️ Error Handling
-- Graceful fallbacks for missing elements
-- Clear error messages in activity log
-- Automatic recovery attempts
-- User-friendly error reporting
+### 🛠️ エラーハンドリング
+- 欠落要素への適切なフォールバック
+- アクティビティログでの明確なエラーメッセージ
+- 自動回復の試行
+- ユーザーフレンドリーなエラー報告
 
-## User Experience Features
+## ユーザーエクスペリエンス機能
 
-### 📝 Flexible Starting
-- Can provide initial topic
-- Or start manually in either AI
-- Extension picks up from there
-- Works with existing conversations
+### 📝 柔軟な開始方法
+- 初期トピックを提供可能
+- またはいずれかのAIで手動開始
+- 拡張機能がそこから引き継ぎ
+- 既存の会話でも動作
 
-### ⏸️ Full Control
-- Stop debates at any time
-- Settings persist across sessions
-- Manual override always available
-- No forced automation
+### ⏸️ 完全なコントロール
+- いつでもディベートを停止可能
+- セッション間で設定が保持される
+- 手動オーバーライドが常に利用可能
+- 強制的な自動化なし
 
-### 📖 Comprehensive Documentation
-- Detailed installation guide
-- Usage examples and tips
-- Troubleshooting section
-- Best practices for different use cases
+### 📖 包括的なドキュメント
+- 詳細なインストールガイド
+- 使用例とヒント
+- トラブルシューティングセクション
+- さまざまなユースケースのベストプラクティス
 
-### 🎯 Multiple Use Cases
-- **Entertainment**: Fun debates and discussions
-- **Research**: Testing AI reasoning patterns
-- **Education**: Demonstrating AI capabilities
-- **Content Creation**: Video recording of AI interactions
+### 🎯 複数のユースケース
+- **エンターテイメント**: 楽しいディベートとディスカッション
+- **研究**: AIの推論パターンのテスト
+- **教育**: AI機能のデモンストレーション
+- **コンテンツ作成**: AIインタラクションのビデオ録画
 
-## Planned Features (Future)
+## 予定されている機能（将来）
 
-### Could Be Added
-- [ ] Save conversation transcripts
-- [ ] Export debate history
-- [ ] Custom AI personalities/prompts
-- [ ] Support for more AI platforms
-- [ ] Debate templates
-- [ ] Statistics and analytics
-- [ ] Keyboard shortcuts
-- [ ] Dark mode toggle
+### 追加される可能性
+- [ ] 会話の文字起こしを保存
+- [ ] ディベート履歴のエクスポート
+- [ ] カスタムAIパーソナリティ/プロンプト
+- [ ] より多くのAIプラットフォームのサポート
+- [ ] ディベートテンプレート
+- [ ] 統計と分析
+- [ ] キーボードショートカット
+- [ ] ダークモードの切り替え
 
-### Community Suggestions Welcome
-Have an idea? [Open an issue](https://github.com/tokumukansoya/Debate-AI-Extension-Chorme/issues) or submit a pull request!
+### コミュニティからの提案を歓迎
+アイデアがありますか？[Issueを開く](https://github.com/tokumukansoya/Debate-AI-Extension-Chorme/issues)かプルリクエストを提出してください！
 
 ---
 
-## Comparison with Manual Approach
+## 手動アプローチとの比較
 
-| Feature | Manual Copy/Paste | AI Debate Extension |
+| 機能 | 手動コピー＆ペースト | AI Debate Extension |
 |---------|------------------|---------------------|
-| Speed | Slow, tedious | Automatic, fast |
-| Accuracy | Error-prone | Precise extraction |
-| Timing | Inconsistent | Configurable delays |
-| Tracking | Manual notes | Automatic logging |
-| Multi-turn | Very tedious | Seamless |
-| Recording | Need to focus on copying | Can focus on watching |
+| 速度 | 遅く、面倒 | 自動で高速 |
+| 正確性 | エラーが発生しやすい | 正確な抽出 |
+| タイミング | 一貫性がない | 設定可能な遅延 |
+| 追跡 | 手動メモ | 自動ログ記録 |
+| 複数ターン | 非常に面倒 | シームレス |
+| 録画 | コピーに集中する必要がある | 視聴に集中できる |
 
 ---
 
-**This extension transforms AI debates from a tedious manual process into a smooth, automated experience! 🚀**
+**この拡張機能は、AIディベートを面倒な手動プロセスからスムーズで自動化された体験に変換します！🚀**
