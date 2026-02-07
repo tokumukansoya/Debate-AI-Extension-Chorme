@@ -11,7 +11,6 @@
   createDebateIndicator();
 
   let isListening = false;
-  let observer = null;
 
   // Listen for messages from background script
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -165,10 +164,6 @@
 
   function stopListening() {
     isListening = false;
-    if (observer) {
-      observer.disconnect();
-      observer = null;
-    }
     hideIndicator();
   }
 })();

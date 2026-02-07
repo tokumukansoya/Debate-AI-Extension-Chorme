@@ -11,6 +11,30 @@ const exchangeCountEl = document.getElementById('exchangeCount');
 const maxExchangesInput = document.getElementById('maxExchanges');
 const delaySecondsInput = document.getElementById('delaySeconds');
 
+// Create error message element
+const errorDiv = document.createElement('div');
+errorDiv.style.display = 'none';
+errorDiv.style.background = '#fee';
+errorDiv.style.color = '#c33';
+errorDiv.style.padding = '10px';
+errorDiv.style.borderRadius = '8px';
+errorDiv.style.marginBottom = '15px';
+errorDiv.style.fontSize = '13px';
+errorDiv.setAttribute('role', 'alert');
+document.querySelector('.container').insertBefore(errorDiv, document.querySelector('.controls'));
+
+function showError(message) {
+  errorDiv.textContent = message;
+  errorDiv.style.display = 'block';
+  setTimeout(() => {
+    errorDiv.style.display = 'none';
+  }, 5000);
+}
+
+function hideError() {
+  errorDiv.style.display = 'none';
+}
+
 // Load saved state
 chrome.storage.local.get(['isDebating', 'exchangeCount'], (result) => {
   isDebating = result.isDebating || false;
@@ -33,9 +57,11 @@ startBtn.addEventListener('click', async () => {
   const delaySeconds = parseInt(delaySecondsInput.value);
   
   if (maxExchanges < 1 || delaySeconds < 1) {
-    alert('Please enter valid values for max exchanges and delay.');
+    showError('Please enter valid values for max exchanges and delay.');
     return;
   }
+
+  hideError();
 
   // Send message to background script to start debate
   chrome.runtime.sendMessage({
@@ -48,7 +74,7 @@ startBtn.addEventListener('click', async () => {
       exchangeCount = 0;
       updateUI();
     } else {
-      alert(response?.error || 'Failed to start debate. Make sure both ChatGPT and Gemini tabs are open.');
+      showError(response?.error || 'Failed to start debate. Make sure both ChatGPT and Gemini tabs are open.');
     }
   });
 });

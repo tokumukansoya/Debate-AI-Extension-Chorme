@@ -11,7 +11,6 @@
   createDebateIndicator();
 
   let isListening = false;
-  let observer = null;
 
   // Listen for messages from background script
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -92,7 +91,6 @@
 
     // Set the message
     editor.textContent = message;
-    editor.innerHTML = message;
     
     // Trigger input events
     editor.dispatchEvent(new Event('input', { bubbles: true }));
@@ -167,10 +165,6 @@
 
   function stopListening() {
     isListening = false;
-    if (observer) {
-      observer.disconnect();
-      observer = null;
-    }
     hideIndicator();
   }
 })();

@@ -110,7 +110,7 @@ async function handleMessageGenerated(message, sender, sendResponse) {
     type: 'debateStatus',
     isDebating: debateState.isDebating,
     exchangeCount: debateState.exchangeCount
-  }).catch(() => {});
+  }).catch((err) => console.log('Popup not open:', err.message));
 
   // Check if we've reached max exchanges
   if (debateState.exchangeCount >= debateState.maxExchanges) {
