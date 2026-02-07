@@ -31,3 +31,7 @@ yarn-error.log*
 .env
 .env.local
 .env.*.local
+
+# Test files
+test-ui.html
+create-icons.js
