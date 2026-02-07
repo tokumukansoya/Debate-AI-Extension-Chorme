@@ -18,10 +18,18 @@ async function findAITabs() {
   let geminiTab = null;
 
   for (const tab of tabs) {
-    if (tab.url.includes('chat.openai.com') || tab.url.includes('chatgpt.com')) {
-      chatgptTab = tab;
-    } else if (tab.url.includes('gemini.google.com')) {
-      geminiTab = tab;
+    try {
+      const url = new URL(tab.url);
+      const hostname = url.hostname;
+      
+      if (hostname === 'chat.openai.com' || hostname === 'chatgpt.com' || hostname === 'www.chatgpt.com') {
+        chatgptTab = tab;
+      } else if (hostname === 'gemini.google.com' || hostname === 'www.gemini.google.com') {
+        geminiTab = tab;
+      }
+    } catch (e) {
+      // Invalid URL, skip
+      continue;
     }
   }
 
