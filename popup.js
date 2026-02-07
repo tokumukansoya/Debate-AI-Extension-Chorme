@@ -72,6 +72,15 @@ function updateStatus(status, text) {
   statusText.textContent = text;
 }
 
+// Status text translations
+const statusTexts = {
+  ready: '準備完了',
+  active: 'ディベート中',
+  stopped: '停止',
+  ended: 'ディベート終了',
+  error: 'エラー'
+};
+
 // Start debate
 startBtn.addEventListener('click', async () => {
   const topic = debateTopicInput.value.trim();
@@ -98,10 +107,10 @@ startBtn.addEventListener('click', async () => {
 
   startBtn.disabled = true;
   stopBtn.disabled = false;
-  updateStatus('active', 'Debate Active');
+  updateStatus('active', 'ディベート中');
   const ai1Name = ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
   const ai2Name = ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
-  addLog(`🚀 Debate started: ${ai1Name} vs ${ai2Name}${topic ? ` - "${topic}"` : ''}`);
+  addLog(`🚀 ディベート開始: ${ai1Name} vs ${ai2Name}${topic ? ` - "${topic}"` : ''}`);
 });
 
 // Stop debate
@@ -111,8 +120,8 @@ stopBtn.addEventListener('click', () => {
   debateState.isActive = false;
   startBtn.disabled = false;
   stopBtn.disabled = true;
-  updateStatus('stopped', 'Stopped');
-  addLog('🛑 Debate stopped by user');
+  updateStatus('stopped', '停止');
+  addLog('🛑 ユーザーによりディベート停止');
 });
 
 // Listen for messages from background script
@@ -123,14 +132,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     debateState.isActive = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
-    updateStatus('stopped', 'Debate Ended');
-    addLog('✅ Debate completed (' + message.turns + ' turns)');
+    updateStatus('stopped', 'ディベート終了');
+    addLog('✅ ディベート完了 (' + message.turns + ' ターン)');
   } else if (message.type === 'debateError') {
     debateState.isActive = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
-    updateStatus('stopped', 'Error');
-    addLog('❌ Error: ' + message.error);
+    updateStatus('stopped', 'エラー');
+    addLog('❌ エラー: ' + message.error);
   }
 });
 
@@ -140,6 +149,6 @@ chrome.runtime.sendMessage({ action: 'getStatus' }, (response) => {
     debateState = response;
     startBtn.disabled = true;
     stopBtn.disabled = false;
-    updateStatus('active', 'Debate Active');
+    updateStatus('active', 'ディベート中');
   }
 });
