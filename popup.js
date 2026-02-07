@@ -72,15 +72,6 @@ function updateStatus(status, text) {
   statusText.textContent = text;
 }
 
-// Status text translations
-const statusTexts = {
-  ready: '準備完了',
-  active: 'ディベート中',
-  stopped: '停止',
-  ended: 'ディベート終了',
-  error: 'エラー'
-};
-
 // Start debate
 startBtn.addEventListener('click', async () => {
   const topic = debateTopicInput.value.trim();
