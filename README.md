@@ -1,12 +1,17 @@
 # 🤖 AI Debate Extension for Chrome
 
-A Chrome extension that enables automated debates between ChatGPT and Google Gemini. Watch two AI systems discuss topics back and forth, perfect for exploring different perspectives, testing AI reasoning, or simply entertainment.
+A Chrome extension that enables automated debates between AI systems. Watch two AI systems (ChatGPT and/or Google Gemini) discuss topics back and forth, perfect for exploring different perspectives, testing AI reasoning, or simply entertainment.
 
 ## ✨ Features
 
+- **Flexible AI Selection**: Choose any combination of AI participants:
+  - ChatGPT vs Gemini (classic debate)
+  - ChatGPT vs ChatGPT (compare different perspectives from the same AI)
+  - Gemini vs Gemini (see how Gemini debates itself)
 - **Automated Debate Flow**: Messages are automatically copied from one AI to the other
 - **Split View Support**: Works seamlessly with Chrome's split-view window management
 - **Customizable Settings**:
+  - Select AI models for both participants
   - Set debate topics
   - Configure turn limits (1-20 exchanges)
   - Adjust delay between responses (1-30 seconds)
@@ -42,15 +47,13 @@ A Chrome extension that enables automated debates between ChatGPT and Google Gem
 
 ### Setup
 
-1. **Open ChatGPT**
-   - Go to [chat.openai.com](https://chat.openai.com) or [chatgpt.com](https://chatgpt.com)
-   - Sign in if needed
+1. **Open AI Tabs**
+   - For ChatGPT vs Gemini: Open [chat.openai.com](https://chat.openai.com) or [chatgpt.com](https://chatgpt.com) and [gemini.google.com](https://gemini.google.com)
+   - For ChatGPT vs ChatGPT: Open two ChatGPT tabs
+   - For Gemini vs Gemini: Open two Gemini tabs
+   - Sign in to all tabs if needed
 
-2. **Open Gemini**
-   - Go to [gemini.google.com](https://gemini.google.com)
-   - Sign in if needed
-
-3. **Arrange Windows**
+2. **Arrange Windows**
    - Use Chrome's split-view or arrange windows side by side
    - This allows you to watch both AIs simultaneously
 
@@ -58,13 +61,15 @@ A Chrome extension that enables automated debates between ChatGPT and Google Gem
 
 1. **Click the extension icon** in your toolbar
 
-2. **Configure settings** (optional):
+2. **Configure settings**:
+   - **AI Participant 1**: Select ChatGPT or Gemini for the first participant
+   - **AI Participant 2**: Select ChatGPT or Gemini for the second participant
    - **Topic**: Enter a debate topic or question (e.g., "What is the meaning of life?")
    - **Turn Limit**: Set how many exchanges you want (default: 5)
    - **Delay**: Set seconds between responses (default: 3)
 
 3. **Click "Start Debate"**
-   - If you provided a topic, it will be sent to ChatGPT first
+   - If you provided a topic, it will be sent to Participant 1 first
    - If no topic, manually start the conversation in either AI
    - The extension will then automatically exchange responses
 
@@ -119,7 +124,8 @@ Debate-AI-Extension-Chorme/
 
 ## ⚠️ Limitations
 
-- Requires active sessions in both ChatGPT and Gemini
+- Requires active sessions in the AI tabs you select
+- For same-AI debates (ChatGPT vs ChatGPT or Gemini vs Gemini), you need two separate tabs open
 - May need adjustment if OpenAI or Google change their UI
 - Response detection uses heuristics and may occasionally miss responses
 - Rate limits from AI providers still apply
@@ -128,7 +134,8 @@ Debate-AI-Extension-Chorme/
 ## 🐛 Troubleshooting
 
 **Extension not working?**
-- Ensure you're signed into both ChatGPT and Gemini
+- Ensure you're signed into the required AI tabs
+- For same-AI debates, make sure you have two separate tabs open
 - Refresh the AI pages after installing the extension
 - Check the browser console for error messages
 - Verify the extension has necessary permissions

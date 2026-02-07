@@ -5,17 +5,19 @@ let debateState = {
   maxTurns: 5,
   topic: '',
   delay: 3000,
-  currentSpeaker: 'chatgpt', // 'chatgpt' or 'gemini'
-  chatgptTabId: null,
-  geminiTabId: null,
+  ai1: 'chatgpt', // Type of first AI: 'chatgpt' or 'gemini'
+  ai2: 'gemini', // Type of second AI: 'chatgpt' or 'gemini'
+  currentSpeaker: 'ai1', // 'ai1' or 'ai2'
+  participant1TabId: null,
+  participant2TabId: null,
   lastResponse: ''
 };
 
 // Find AI tabs
-async function findAITabs() {
+async function findAITabs(ai1Type, ai2Type) {
   const tabs = await chrome.tabs.query({});
-  let chatgptTab = null;
-  let geminiTab = null;
+  let chatgptTabs = [];
+  let geminiTabs = [];
 
   for (const tab of tabs) {
     try {
@@ -23,9 +25,9 @@ async function findAITabs() {
       const hostname = url.hostname;
       
       if (hostname === 'chat.openai.com' || hostname === 'chatgpt.com' || hostname === 'www.chatgpt.com') {
-        chatgptTab = tab;
+        chatgptTabs.push(tab);
       } else if (hostname === 'gemini.google.com' || hostname === 'www.gemini.google.com') {
-        geminiTab = tab;
+        geminiTabs.push(tab);
       }
     } catch (e) {
       // Invalid URL, skip
@@ -33,7 +35,23 @@ async function findAITabs() {
     }
   }
 
-  return { chatgptTab, geminiTab };
+  let participant1Tab = null;
+  let participant2Tab = null;
+
+  // If both are the same AI type, we need two tabs of that type
+  if (ai1Type === ai2Type) {
+    const tabs = ai1Type === 'chatgpt' ? chatgptTabs : geminiTabs;
+    if (tabs.length >= 2) {
+      participant1Tab = tabs[0];
+      participant2Tab = tabs[1];
+    }
+  } else {
+    // Different AI types - assign from their respective arrays
+    participant1Tab = ai1Type === 'chatgpt' ? chatgptTabs[0] : geminiTabs[0];
+    participant2Tab = ai2Type === 'chatgpt' ? chatgptTabs[0] : geminiTabs[0];
+  }
+
+  return { participant1Tab, participant2Tab };
 }
 
 // Send log to popup
@@ -47,33 +65,42 @@ async function startDebate(config) {
     ...config,
     isActive: true,
     currentTurn: 0,
-    currentSpeaker: 'chatgpt',
+    currentSpeaker: 'ai1',
     lastResponse: ''
   };
 
-  const { chatgptTab, geminiTab } = await findAITabs();
+  const { participant1Tab, participant2Tab } = await findAITabs(config.ai1, config.ai2);
 
-  if (!chatgptTab || !geminiTab) {
-    sendLog('❌ Please open both ChatGPT and Gemini in separate tabs');
+  const ai1Name = config.ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
+  const ai2Name = config.ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
+
+  if (!participant1Tab || !participant2Tab) {
+    let errorMsg = '❌ Please open required AI tabs: ';
+    if (config.ai1 === config.ai2) {
+      errorMsg += `two ${ai1Name} tabs`;
+    } else {
+      errorMsg += `${ai1Name} and ${ai2Name} tabs`;
+    }
+    sendLog(errorMsg);
     chrome.runtime.sendMessage({ 
       type: 'debateError', 
-      error: 'Missing ChatGPT or Gemini tabs' 
+      error: 'Missing required AI tabs' 
     }).catch(() => {});
     debateState.isActive = false;
     return;
   }
 
-  debateState.chatgptTabId = chatgptTab.id;
-  debateState.geminiTabId = geminiTab.id;
+  debateState.participant1TabId = participant1Tab.id;
+  debateState.participant2TabId = participant2Tab.id;
 
-  // Start with ChatGPT if there's a topic
+  // Start with AI 1 if there's a topic
   if (config.topic) {
-    sendLog('💬 Sending topic to ChatGPT...');
-    await chrome.tabs.sendMessage(chatgptTab.id, {
+    sendLog(`💬 Sending topic to ${ai1Name} (Participant 1)...`);
+    await chrome.tabs.sendMessage(participant1Tab.id, {
       action: 'sendMessage',
       message: config.topic
     });
-    debateState.currentSpeaker = 'gemini'; // Next will be Gemini
+    debateState.currentSpeaker = 'ai2'; // Next will be AI 2
   } else {
     sendLog('⚠️ No topic provided. Please start the conversation manually.');
   }
@@ -89,14 +116,18 @@ function stopDebate() {
 async function handleAIResponse(tabId, response) {
   if (!debateState.isActive) return;
 
-  const isFromChatGPT = tabId === debateState.chatgptTabId;
-  const isFromGemini = tabId === debateState.geminiTabId;
+  const isFromParticipant1 = tabId === debateState.participant1TabId;
+  const isFromParticipant2 = tabId === debateState.participant2TabId;
 
-  if (!isFromChatGPT && !isFromGemini) return;
+  if (!isFromParticipant1 && !isFromParticipant2) return;
 
+  // Determine AI names for logging
+  const speakerType = isFromParticipant1 ? debateState.ai1 : debateState.ai2;
+  const participantNum = isFromParticipant1 ? '1' : '2';
+  const speaker = speakerType === 'chatgpt' ? 'ChatGPT' : 'Gemini';
+  
   // Log the response
-  const speaker = isFromChatGPT ? 'ChatGPT' : 'Gemini';
-  sendLog(`📝 ${speaker} responded`);
+  sendLog(`📝 ${speaker} (Participant ${participantNum}) responded`);
 
   debateState.lastResponse = response;
   debateState.currentTurn++;
@@ -116,22 +147,24 @@ async function handleAIResponse(tabId, response) {
   setTimeout(async () => {
     if (!debateState.isActive) return;
 
-    if (isFromChatGPT) {
-      // Send to Gemini
-      sendLog('➡️ Sending to Gemini...');
-      await chrome.tabs.sendMessage(debateState.geminiTabId, {
+    if (isFromParticipant1) {
+      // Send to Participant 2
+      const ai2Name = debateState.ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
+      sendLog(`➡️ Sending to ${ai2Name} (Participant 2)...`);
+      await chrome.tabs.sendMessage(debateState.participant2TabId, {
         action: 'sendMessage',
         message: response
       });
-      debateState.currentSpeaker = 'chatgpt';
+      debateState.currentSpeaker = 'ai1';
     } else {
-      // Send to ChatGPT
-      sendLog('➡️ Sending to ChatGPT...');
-      await chrome.tabs.sendMessage(debateState.chatgptTabId, {
+      // Send to Participant 1
+      const ai1Name = debateState.ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
+      sendLog(`➡️ Sending to ${ai1Name} (Participant 1)...`);
+      await chrome.tabs.sendMessage(debateState.participant1TabId, {
         action: 'sendMessage',
         message: response
       });
-      debateState.currentSpeaker = 'gemini';
+      debateState.currentSpeaker = 'ai2';
     }
   }, debateState.delay);
 }

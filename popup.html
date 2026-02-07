@@ -21,6 +21,22 @@
       <h3>Settings</h3>
       
       <div class="setting-item">
+        <label for="ai1Select">AI Participant 1:</label>
+        <select id="ai1Select">
+          <option value="chatgpt">ChatGPT</option>
+          <option value="gemini">Gemini</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <label for="ai2Select">AI Participant 2:</label>
+        <select id="ai2Select">
+          <option value="gemini">Gemini</option>
+          <option value="chatgpt">ChatGPT</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
         <label for="debateTopic">Topic (optional):</label>
         <input type="text" id="debateTopic" placeholder="Enter debate topic...">
       </div>
@@ -39,8 +55,8 @@
     <div class="instruction-section">
       <p class="instruction">
         <strong>Setup:</strong>
-        <br>1. Open ChatGPT in one window
-        <br>2. Open Gemini in another window
+        <br>1. Select AI models for both participants
+        <br>2. Open required AI tabs (can be same AI in different tabs)
         <br>3. Arrange in split view
         <br>4. Click Start Debate
       </p>
