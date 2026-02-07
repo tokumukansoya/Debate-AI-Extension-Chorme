@@ -54,10 +54,10 @@ async function startDebate(config) {
   const { chatgptTab, geminiTab } = await findAITabs();
 
   if (!chatgptTab || !geminiTab) {
-    sendLog('❌ Please open both ChatGPT and Gemini in separate tabs');
+    sendLog('❌ ChatGPTとGeminiの両方を別々のタブで開いてください');
     chrome.runtime.sendMessage({ 
       type: 'debateError', 
-      error: 'Missing ChatGPT or Gemini tabs' 
+      error: 'ChatGPTまたはGeminiのタブがありません' 
     }).catch(() => {});
     debateState.isActive = false;
     return;
@@ -68,21 +68,21 @@ async function startDebate(config) {
 
   // Start with ChatGPT if there's a topic
   if (config.topic) {
-    sendLog('💬 Sending topic to ChatGPT...');
+    sendLog('💬 ChatGPTにトピックを送信中...');
     await chrome.tabs.sendMessage(chatgptTab.id, {
       action: 'sendMessage',
       message: config.topic
     });
     debateState.currentSpeaker = 'gemini'; // Next will be Gemini
   } else {
-    sendLog('⚠️ No topic provided. Please start the conversation manually.');
+    sendLog('⚠️ トピックが指定されていません。手動で会話を開始してください。');
   }
 }
 
 // Stop the debate
 function stopDebate() {
   debateState.isActive = false;
-  sendLog('Debate stopped');
+  sendLog('討論を停止しました');
 }
 
 // Handle response from AI
@@ -104,7 +104,7 @@ async function handleAIResponse(tabId, response) {
   // Check if debate should end
   if (debateState.currentTurn >= debateState.maxTurns) {
     debateState.isActive = false;
-    sendLog('✅ Debate completed');
+    sendLog('✅ 討論が完了しました');
     chrome.runtime.sendMessage({ 
       type: 'debateEnded', 
       turns: debateState.currentTurn 
@@ -118,7 +118,7 @@ async function handleAIResponse(tabId, response) {
 
     if (isFromChatGPT) {
       // Send to Gemini
-      sendLog('➡️ Sending to Gemini...');
+      sendLog('➡️ Geminiに送信中...');
       await chrome.tabs.sendMessage(debateState.geminiTabId, {
         action: 'sendMessage',
         message: response
@@ -126,7 +126,7 @@ async function handleAIResponse(tabId, response) {
       debateState.currentSpeaker = 'chatgpt';
     } else {
       // Send to ChatGPT
-      sendLog('➡️ Sending to ChatGPT...');
+      sendLog('➡️ ChatGPTに送信中...');
       await chrome.tabs.sendMessage(debateState.chatgptTabId, {
         action: 'sendMessage',
         message: response

@@ -80,8 +80,8 @@ startBtn.addEventListener('click', async () => {
 
   startBtn.disabled = true;
   stopBtn.disabled = false;
-  updateStatus('active', 'Debate Active');
-  addLog('🚀 Debate started' + (topic ? `: "${topic}"` : ''));
+  updateStatus('active', '討論中');
+  addLog('🚀 討論を開始しました' + (topic ? `: "${topic}"` : ''));
 });
 
 // Stop debate
@@ -91,8 +91,8 @@ stopBtn.addEventListener('click', () => {
   debateState.isActive = false;
   startBtn.disabled = false;
   stopBtn.disabled = true;
-  updateStatus('stopped', 'Stopped');
-  addLog('🛑 Debate stopped by user');
+  updateStatus('stopped', '停止');
+  addLog('🛑 ユーザーによって討論が停止されました');
 });
 
 // Listen for messages from background script
@@ -103,14 +103,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     debateState.isActive = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
-    updateStatus('stopped', 'Debate Ended');
-    addLog('✅ Debate completed (' + message.turns + ' turns)');
+    updateStatus('stopped', '討論終了');
+    addLog('✅ 討論が完了しました (' + message.turns + ' ターン)');
   } else if (message.type === 'debateError') {
     debateState.isActive = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
-    updateStatus('stopped', 'Error');
-    addLog('❌ Error: ' + message.error);
+    updateStatus('stopped', 'エラー');
+    addLog('❌ エラー: ' + message.error);
   }
 });
 
@@ -120,6 +120,6 @@ chrome.runtime.sendMessage({ action: 'getStatus' }, (response) => {
     debateState = response;
     startBtn.disabled = true;
     stopBtn.disabled = false;
-    updateStatus('active', 'Debate Active');
+    updateStatus('active', '討論中');
   }
 });
