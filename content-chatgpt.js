@@ -144,7 +144,7 @@ function addIndicator() {
     font-weight: 600;
     z-index: 999999;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   `;
   indicator.textContent = '🤖 AIディベート実行中';
   document.body.appendChild(indicator);
