@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIディベート - エラーメッセージデモ</title>
+  <link rel="stylesheet" href="popup.css">
+  <style>
+    body {
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .demo-section {
+      margin-bottom: 30px;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .demo-section h2 {
+      font-size: 18px;
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+    .demo-section p {
+      margin-bottom: 10px;
+      color: #666;
+      font-size: 14px;
+    }
+    .error-message {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 6px;
+      border-left: 4px solid #dc3545;
+      margin: 10px 0;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 13px;
+      color: #333;
+    }
+    .warning-message {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 6px;
+      border-left: 4px solid #ffc107;
+      margin: 10px 0;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 13px;
+      color: #333;
+    }
+    .info-message {
+      background: #e8f4f8;
+      padding: 10px;
+      border-radius: 6px;
+      border-left: 4px solid #667eea;
+      margin: 10px 0;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 13px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 AIディベート拡張機能 - エラーメッセージデモ</h1>
+    
+    <div class="demo-section">
+      <h2>1. タブが見つからない場合のエラー</h2>
+      <p><strong>シナリオ:</strong> ChatGPT vs ChatGPTを選択したが、ChatGPTのタブが開かれていない</p>
+      <div class="error-message">❌ ChatGPTのタブが見つかりません
+必要な条件:
+• ChatGPTのタブを2つ開いてください
+• 各タブでログインしていることを確認してください
+• タブを開いた後、拡張機能アイコンをクリックしてください</div>
+    </div>
+
+    <div class="demo-section">
+      <h2>2. タブが1つしかない場合のエラー</h2>
+      <p><strong>シナリオ:</strong> Gemini vs Geminiを選択したが、Geminiのタブが1つしか開かれていない</p>
+      <div class="error-message">❌ Geminiのタブが1つしか開かれていません
+必要な条件:
+• Geminiのタブをもう1つ開いてください（合計2つ必要）
+• 両方のタブでログインしていることを確認してください</div>
+    </div>
+
+    <div class="demo-section">
+      <h2>3. 異なるAIタイプのタブが見つからない</h2>
+      <p><strong>シナリオ:</strong> ChatGPT vs Geminiを選択したが、必要なタブが開かれていない</p>
+      <div class="error-message">❌ 必要なAIタブが開かれていません: ChatGPT, Gemini
+必要な条件:
+• ChatGPTのタブを開いてください (chat.openai.com または chatgpt.com)
+• Geminiのタブを開いてください (gemini.google.com)
+• 各タブでログインしていることを確認してください
+• タブを開いた後、拡張機能アイコンをクリックしてください</div>
+    </div>
+
+    <div class="demo-section">
+      <h2>4. 入力ボックスが見つからない</h2>
+      <p><strong>シナリオ:</strong> ユーザーがログインしていないか、ページが読み込まれていない</p>
+      <div class="error-message">❌ ChatGPTの入力ボックスが見つかりません
+必要な条件:
+• ChatGPTにログインしていることを確認してください
+• 新しい会話を開始していることを確認してください
+• ページを更新してから再試行してください</div>
+    </div>
+
+    <div class="demo-section">
+      <h2>5. 送信ボタンが無効</h2>
+      <p><strong>シナリオ:</strong> AIが現在応答中のため送信ボタンが無効</p>
+      <div class="error-message">❌ Geminiの送信ボタンが見つからないか、無効になっています
+必要な条件:
+• メッセージが入力されていることを確認してください
+• Geminiが応答中でないことを確認してください
+• ページを更新してから再試行してください</div>
+    </div>
+
+    <div class="demo-section">
+      <h2>6. 応答タイムアウト</h2>
+      <p><strong>シナリオ:</strong> AIの応答が2分以内に完了しなかった</p>
+      <div class="warning-message">⚠️ ChatGPTの応答がタイムアウトしました
+考えられる原因:
+• 応答が非常に長い可能性があります
+• ChatGPTがエラーを返した可能性があります
+• ネットワークの問題がある可能性があります
+対処方法:
+• 遅延設定を増やしてください
+• ページを更新してから再試行してください</div>
+    </div>
+
+    <div class="demo-section">
+      <h2>7. 入力検証エラー</h2>
+      <p><strong>シナリオ:</strong> ユーザーが無効な値を入力した</p>
+      <div class="warning-message">⚠️ ターン制限は1から20の間で設定してください</div>
+      <div class="warning-message">⚠️ 遅延は1から30秒の間で設定してください</div>
+    </div>
+
+    <div class="demo-section">
+      <h2>8. 情報メッセージ</h2>
+      <p><strong>シナリオ:</strong> トピックが入力されていない場合の情報</p>
+      <div class="info-message">ℹ️ トピックが指定されていないため、手動で会話を開始してください</div>
+    </div>
+
+    <div class="demo-section">
+      <h2>9. メッセージ送信失敗</h2>
+      <p><strong>シナリオ:</strong> ディベート中にメッセージの送信に失敗</p>
+      <div class="error-message">❌ Geminiへのメッセージ送信エラー: メッセージの送信に失敗しました
+必要な条件:
+• Geminiページが開いていることを確認してください
+• Geminiにログインしていることを確認してください
+• ページを更新してから再試行してください</div>
+    </div>
+
+    <div class="demo-section">
+      <h2>改善点のまとめ</h2>
+      <ul style="line-height: 1.8; color: #666;">
+        <li>✅ すべてのエラーメッセージが日本語で表示される</li>
+        <li>✅ エラーの原因が明確に説明される</li>
+        <li>✅ 具体的な解決策が提示される</li>
+        <li>✅ 段階的な指示が含まれる</li>
+        <li>✅ 視覚的に区別しやすい（絵文字と色分け）</li>
+        <li>✅ 複数行のメッセージが適切にフォーマットされる</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

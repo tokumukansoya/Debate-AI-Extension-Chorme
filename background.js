@@ -196,12 +196,12 @@ async function handleAIResponse(tabId, response) {
         // Send to Participant 2
         const ai2Name = debateState.ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
         sendLog(`➡️ ${ai2Name}（参加者2）に送信中...`);
-        const response = await chrome.tabs.sendMessage(debateState.participant2TabId, {
+        const sendResult = await chrome.tabs.sendMessage(debateState.participant2TabId, {
           action: 'sendMessage',
           message: response
         });
         
-        if (!response || !response.success) {
+        if (!sendResult || !sendResult.success) {
           throw new Error('メッセージの送信に失敗しました');
         }
         debateState.currentSpeaker = 'ai1';
@@ -209,12 +209,12 @@ async function handleAIResponse(tabId, response) {
         // Send to Participant 1
         const ai1Name = debateState.ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
         sendLog(`➡️ ${ai1Name}（参加者1）に送信中...`);
-        const response = await chrome.tabs.sendMessage(debateState.participant1TabId, {
+        const sendResult = await chrome.tabs.sendMessage(debateState.participant1TabId, {
           action: 'sendMessage',
           message: response
         });
         
-        if (!response || !response.success) {
+        if (!sendResult || !sendResult.success) {
           throw new Error('メッセージの送信に失敗しました');
         }
         debateState.currentSpeaker = 'ai2';
