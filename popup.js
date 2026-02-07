@@ -80,6 +80,17 @@ startBtn.addEventListener('click', async () => {
   const ai1 = ai1Select.value;
   const ai2 = ai2Select.value;
 
+  // Validation
+  if (turnLimit < 1 || turnLimit > 20) {
+    addLog('⚠️ ターン制限は1から20の間で設定してください');
+    return;
+  }
+
+  if (delaySeconds < 1 || delaySeconds > 30) {
+    addLog('⚠️ 遅延は1から30秒の間で設定してください');
+    return;
+  }
+
   debateState = {
     isActive: true,
     currentTurn: 0,
@@ -102,6 +113,10 @@ startBtn.addEventListener('click', async () => {
   const ai1Name = ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
   const ai2Name = ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
   addLog(`🚀 ディベート開始: ${ai1Name} vs ${ai2Name}${topic ? ` - "${topic}"` : ''}`);
+  
+  if (!topic) {
+    addLog('ℹ️ トピックが指定されていないため、手動で会話を開始してください');
+  }
 });
 
 // Stop debate
@@ -131,6 +146,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     stopBtn.disabled = true;
     updateStatus('stopped', 'エラー');
     addLog('❌ エラー: ' + message.error);
+    if (message.details) {
+      addLog(message.details);
+    }
   }
 });
 

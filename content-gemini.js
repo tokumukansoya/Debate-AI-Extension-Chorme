@@ -40,6 +40,10 @@ function sendMessage(message) {
   
   if (!inputBox) {
     console.error('Gemini input box not found');
+    chrome.runtime.sendMessage({
+      action: 'log',
+      message: '❌ Geminiの入力ボックスが見つかりません\n必要な条件:\n• Geminiにログインしていることを確認してください\n• 新しい会話を開始していることを確認してください\n• ページを更新してから再試行してください'
+    }).catch(() => {});
     return false;
   }
 
@@ -84,6 +88,11 @@ function sendMessage(message) {
       waitForResponse();
     } else {
       console.error('Gemini send button not found or disabled');
+      chrome.runtime.sendMessage({
+        action: 'log',
+        message: '❌ Geminiの送信ボタンが見つからないか、無効になっています\n必要な条件:\n• メッセージが入力されていることを確認してください\n• Geminiが応答中でないことを確認してください\n• ページを更新してから再試行してください'
+      }).catch(() => {});
+      return false;
     }
   }, 500);
 
@@ -138,6 +147,10 @@ function waitForResponse() {
     if (checkCount >= maxChecks) {
       clearInterval(responseCheckInterval);
       console.log('Response timeout');
+      chrome.runtime.sendMessage({
+        action: 'log',
+        message: '⚠️ Geminiの応答がタイムアウトしました\n考えられる原因:\n• 応答が非常に長い可能性があります\n• Geminiがエラーを返した可能性があります\n• ネットワークの問題がある可能性があります\n対処方法:\n• 遅延設定を増やしてください\n• ページを更新してから再試行してください'
+      }).catch(() => {});
     }
   }, 1000);
 }
@@ -169,7 +182,7 @@ function addIndicator() {
     font-weight: 600;
     z-index: 999999;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   `;
   indicator.textContent = '🤖 AIディベート実行中';
   document.body.appendChild(indicator);

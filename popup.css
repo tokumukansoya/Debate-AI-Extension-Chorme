@@ -6,7 +6,7 @@
 
 body {
   width: 400px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   color: #333;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
@@ -187,6 +187,8 @@ h3 {
 .log-entry {
   padding: 5px 0;
   border-bottom: 1px solid #e0e0e0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .log-entry:last-child {
