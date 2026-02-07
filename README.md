@@ -1,171 +1,171 @@
-# 🤖 AI Debate Extension for Chrome
+# 🤖 Chrome用AIディベート拡張機能
 
-A Chrome extension that enables automated debates between AI systems. Watch two AI systems (ChatGPT and/or Google Gemini) discuss topics back and forth, perfect for exploring different perspectives, testing AI reasoning, or simply entertainment.
+AIシステム間の自動ディベートを可能にするChrome拡張機能です。2つのAIシステム（ChatGPTとGemini、または同じAI同士）が交互に議論する様子を観察できます。異なる視点の探求、AI推論のテスト、または単純な娯楽に最適です。
 
-## ✨ Features
+## ✨ 特徴
 
-- **Flexible AI Selection**: Choose any combination of AI participants:
-  - ChatGPT vs Gemini (classic debate)
-  - ChatGPT vs ChatGPT (compare different perspectives from the same AI)
-  - Gemini vs Gemini (see how Gemini debates itself)
-- **Automated Debate Flow**: Messages are automatically copied from one AI to the other
-- **Split View Support**: Works seamlessly with Chrome's split-view window management
-- **Customizable Settings**:
-  - Select AI models for both participants
-  - Set debate topics
-  - Configure turn limits (1-20 exchanges)
-  - Adjust delay between responses (1-30 seconds)
-- **Clean, Simple UI**: Minimal design perfect for screen recording
-- **Real-time Activity Log**: Track the debate progress with timestamped events
-- **Visual Indicators**: See when the extension is active on each AI page
+- **柔軟なAI選択**: 任意のAI参加者の組み合わせを選択可能:
+  - ChatGPT vs Gemini（クラシックなディベート）
+  - ChatGPT vs ChatGPT（同じAIから異なる視点を比較）
+  - Gemini vs Gemini（Geminiが自己討論する様子を観察）
+- **自動ディベートフロー**: メッセージが一方のAIから他方へ自動的にコピーされます
+- **分割ビューサポート**: Chromeの分割ビューウィンドウ管理とシームレスに連携
+- **カスタマイズ可能な設定**:
+  - 両参加者のAIモデルを選択
+  - ディベートトピックを設定
+  - ターン制限を設定（1〜20回の交換）
+  - 応答間の遅延を調整（1〜30秒）
+- **クリーンでシンプルなUI**: 画面録画に最適なミニマルデザイン
+- **リアルタイムアクティビティログ**: タイムスタンプ付きイベントでディベートの進行を追跡
+- **視覚的インジケーター**: 各AIページで拡張機能がアクティブなときに表示
 
-## 📦 Installation
+## 📦 インストール
 
-### Option 1: Load Unpacked Extension (Development)
+### オプション1: 非パッケージ拡張機能の読み込み（開発用）
 
-1. **Clone or download this repository**
+1. **このリポジトリをクローンまたはダウンロード**
    ```bash
    git clone https://github.com/tokumukansoya/Debate-AI-Extension-Chorme.git
    ```
 
-2. **Open Chrome Extensions page**
-   - Navigate to `chrome://extensions/`
-   - Or: Menu → More Tools → Extensions
+2. **Chrome拡張機能ページを開く**
+   - `chrome://extensions/` に移動
+   - または: メニュー → その他のツール → 拡張機能
 
-3. **Enable Developer Mode**
-   - Toggle the "Developer mode" switch in the top-right corner
+3. **デベロッパーモードを有効化**
+   - 右上隅の「デベロッパーモード」スイッチを切り替え
 
-4. **Load the extension**
-   - Click "Load unpacked"
-   - Select the extension directory
+4. **拡張機能を読み込む**
+   - 「パッケージ化されていない拡張機能を読み込む」をクリック
+   - 拡張機能ディレクトリを選択
 
-5. **Verify installation**
-   - You should see "AI Debate Extension" in your extensions list
-   - Pin it to the toolbar for easy access
+5. **インストールを確認**
+   - 拡張機能リストに「AIディベート拡張機能」が表示されるはずです
+   - 簡単にアクセスできるようにツールバーにピン留め
 
-## 🚀 Usage
+## 🚀 使い方
 
-### Setup
+### セットアップ
 
-1. **Open AI Tabs**
-   - For ChatGPT vs Gemini: Open [chat.openai.com](https://chat.openai.com) or [chatgpt.com](https://chatgpt.com) and [gemini.google.com](https://gemini.google.com)
-   - For ChatGPT vs ChatGPT: Open two ChatGPT tabs
-   - For Gemini vs Gemini: Open two Gemini tabs
-   - Sign in to all tabs if needed
+1. **AIタブを開く**
+   - ChatGPT vs Geminiの場合: [chat.openai.com](https://chat.openai.com) または [chatgpt.com](https://chatgpt.com) と [gemini.google.com](https://gemini.google.com) を開く
+   - ChatGPT vs ChatGPTの場合: 2つのChatGPTタブを開く
+   - Gemini vs Geminiの場合: 2つのGeminiタブを開く
+   - 必要に応じてすべてのタブにサインイン
 
-2. **Arrange Windows**
-   - Use Chrome's split-view or arrange windows side by side
-   - This allows you to watch both AIs simultaneously
+2. **ウィンドウを配置**
+   - Chromeの分割ビューを使用するか、ウィンドウを並べて配置
+   - これにより、両方のAIを同時に見ることができます
 
-### Starting a Debate
+### ディベートの開始
 
-1. **Click the extension icon** in your toolbar
+1. **ツールバーの拡張機能アイコンをクリック**
 
-2. **Configure settings**:
-   - **AI Participant 1**: Select ChatGPT or Gemini for the first participant
-   - **AI Participant 2**: Select ChatGPT or Gemini for the second participant
-   - **Topic**: Enter a debate topic or question (e.g., "What is the meaning of life?")
-   - **Turn Limit**: Set how many exchanges you want (default: 5)
-   - **Delay**: Set seconds between responses (default: 3)
+2. **設定を構成**:
+   - **AI参加者1**: 最初の参加者としてChatGPTまたはGeminiを選択
+   - **AI参加者2**: 2番目の参加者としてChatGPTまたはGeminiを選択
+   - **トピック**: ディベートトピックまたは質問を入力（例：「人生の意味とは何か？」）
+   - **ターン制限**: 希望する交換回数を設定（デフォルト: 5）
+   - **遅延**: 応答間の秒数を設定（デフォルト: 3）
 
-3. **Click "Start Debate"**
-   - If you provided a topic, it will be sent to Participant 1 first
-   - If no topic, manually start the conversation in either AI
-   - The extension will then automatically exchange responses
+3. **「ディベート開始」をクリック**
+   - トピックを入力した場合、まず参加者1に送信されます
+   - トピックを入力しない場合、いずれかのAIで手動で会話を開始
+   - その後、拡張機能が自動的に応答を交換します
 
-4. **Watch the debate unfold**
-   - Monitor the activity log for progress
-   - Both AI pages will show a "🤖 AI Debate Active" indicator
+4. **ディベートが展開するのを見る**
+   - アクティビティログで進行状況を監視
+   - 両方のAIページに「🤖 AIディベート実行中」インジケーターが表示されます
 
-5. **Stop anytime**
-   - Click "Stop Debate" to end early
-   - Or wait for the turn limit to be reached
+5. **いつでも停止**
+   - 「ディベート停止」をクリックして早期に終了
+   - またはターン制限に達するまで待機
 
-## 🎥 Tips for Recording
+## 🎥 録画のヒント
 
-- Use a clean browser profile without other extensions for minimal UI
-- The extension has a simple, unobtrusive design
-- Activity log helps you track what's happening off-screen
-- Consider using split-screen recording software to capture both AIs
+- 他の拡張機能のないクリーンなブラウザプロファイルを使用してUIを最小化
+- 拡張機能はシンプルで目立たないデザイン
+- アクティビティログは画面外で何が起こっているかを追跡するのに役立ちます
+- 両方のAIをキャプチャするために分割画面録画ソフトウェアの使用を検討
 
-## 🔧 Technical Details
+## 🔧 技術詳細
 
-### Extension Structure
+### 拡張機能の構造
 
 ```
 Debate-AI-Extension-Chorme/
-├── manifest.json           # Extension configuration
-├── popup.html             # Control panel UI
-├── popup.css              # Styling
-├── popup.js               # Control panel logic
-├── background.js          # Service worker for coordination
-├── content-chatgpt.js     # ChatGPT page interaction
-├── content-gemini.js      # Gemini page interaction
-└── icons/                 # Extension icons
+├── manifest.json           # 拡張機能の設定
+├── popup.html             # コントロールパネルUI
+├── popup.css              # スタイリング
+├── popup.js               # コントロールパネルロジック
+├── background.js          # 調整用サービスワーカー
+├── content-chatgpt.js     # ChatGPTページとの相互作用
+├── content-gemini.js      # Geminiページとの相互作用
+└── icons/                 # 拡張機能アイコン
 ```
 
-### How It Works
+### 動作方法
 
-1. **Content Scripts** inject into ChatGPT and Gemini pages
-2. **Background Service Worker** coordinates the debate flow
-3. **Popup UI** provides user control and status updates
-4. Content scripts:
-   - Extract AI responses from the page
-   - Inject messages into input fields
-   - Click send buttons programmatically
-   - Wait for response completion before continuing
+1. **コンテンツスクリプト**がChatGPTとGeminiページに注入されます
+2. **バックグラウンドサービスワーカー**がディベートフローを調整します
+3. **ポップアップUI**がユーザーコントロールとステータス更新を提供します
+4. コンテンツスクリプト:
+   - ページからAI応答を抽出
+   - 入力フィールドにメッセージを注入
+   - プログラムで送信ボタンをクリック
+   - 続行する前に応答の完了を待機
 
-### Permissions
+### 権限
 
-- `activeTab`: To interact with the current tab
-- `storage`: To save user preferences
-- `scripting`: To inject content scripts
-- Host permissions for `chat.openai.com`, `chatgpt.com`, and `gemini.google.com`
+- `activeTab`: 現在のタブと相互作用するため
+- `storage`: ユーザー設定を保存するため
+- `scripting`: コンテンツスクリプトを注入するため
+- `chat.openai.com`、`chatgpt.com`、`gemini.google.com`のホスト権限
 
-## ⚠️ Limitations
+## ⚠️ 制限事項
 
-- Requires active sessions in the AI tabs you select
-- For same-AI debates (ChatGPT vs ChatGPT or Gemini vs Gemini), you need two separate tabs open
-- May need adjustment if OpenAI or Google change their UI
-- Response detection uses heuristics and may occasionally miss responses
-- Rate limits from AI providers still apply
-- Does not bypass any API limits or terms of service
+- 選択したAIタブでアクティブなセッションが必要
+- 同じAIのディベート（ChatGPT vs ChatGPTまたはGemini vs Gemini）の場合、2つの別々のタブを開く必要があります
+- OpenAIまたはGoogleがUIを変更した場合、調整が必要になる可能性があります
+- 応答検出はヒューリスティックを使用し、時々応答を見逃す可能性があります
+- AIプロバイダーからのレート制限は引き続き適用されます
+- APIの制限やサービス規約をバイパスすることはありません
 
-## 🐛 Troubleshooting
+## 🐛 トラブルシューティング
 
-**Extension not working?**
-- Ensure you're signed into the required AI tabs
-- For same-AI debates, make sure you have two separate tabs open
-- Refresh the AI pages after installing the extension
-- Check the browser console for error messages
-- Verify the extension has necessary permissions
+**拡張機能が動作しない場合は？**
+- 必要なAIタブにサインインしていることを確認
+- 同じAIのディベートの場合、2つの別々のタブを開いていることを確認
+- 拡張機能をインストールした後、AIページを更新
+- ブラウザコンソールでエラーメッセージを確認
+- 拡張機能が必要な権限を持っていることを確認
 
-**Messages not sending?**
-- Try increasing the delay setting
-- Check if the AI pages are fully loaded
-- Refresh the pages and try again
+**メッセージが送信されない場合は？**
+- 遅延設定を増やしてみる
+- AIページが完全に読み込まれているか確認
+- ページを更新して再試行
 
-**Responses not detected?**
-- The extension waits for responses to stabilize
-- Very long responses may take time to complete
-- Check the activity log for status updates
+**応答が検出されない場合は？**
+- 拡張機能は応答が安定するのを待ちます
+- 非常に長い応答は完了に時間がかかる場合があります
+- ステータス更新のためにアクティビティログを確認
 
-## 🤝 Contributing
+## 🤝 貢献
 
-Contributions are welcome! Please feel free to submit issues or pull requests.
+貢献を歓迎します！問題の報告やプルリクエストの提出をお気軽にどうぞ。
 
-## 📄 License
+## 📄 ライセンス
 
-This project is open source and available under the MIT License.
+このプロジェクトはオープンソースで、MITライセンスの下で利用可能です。
 
-## ⚖️ Disclaimer
+## ⚖️ 免責事項
 
-This extension is for educational and entertainment purposes. It automates interaction with web interfaces of ChatGPT and Gemini. Users should:
-- Respect the terms of service of both platforms
-- Not use this for any malicious purposes
-- Be aware of rate limits and usage policies
-- Understand that AI responses may be unpredictable
+この拡張機能は教育および娯楽目的です。ChatGPTとGeminiのWebインターフェースとの相互作用を自動化します。ユーザーは次のことを行う必要があります：
+- 両プラットフォームのサービス規約を尊重する
+- 悪意のある目的に使用しない
+- レート制限と使用ポリシーを認識する
+- AI応答が予測不可能である可能性があることを理解する
 
 ---
 
-**Enjoy watching AI debates! 🎭**
+**AIディベートをお楽しみください！ 🎭**

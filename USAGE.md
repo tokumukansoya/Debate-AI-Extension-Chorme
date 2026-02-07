@@ -1,276 +1,276 @@
-# 🎯 Usage Guide
+# 🎯 使用ガイド
 
-## Quick Start
+## クイックスタート
 
-1. **Install the extension** (see [INSTALLATION.md](INSTALLATION.md))
-2. **Open two browser windows/tabs:**
-   - ChatGPT: [chat.openai.com](https://chat.openai.com) or [chatgpt.com](https://chatgpt.com)
+1. **拡張機能をインストールする**（[INSTALLATION.md](INSTALLATION.md)を参照）
+2. **2つのブラウザウィンドウ/タブを開く：**
+   - ChatGPT: [chat.openai.com](https://chat.openai.com) または [chatgpt.com](https://chatgpt.com)
    - Gemini: [gemini.google.com](https://gemini.google.com)
-3. **Arrange in split view** for easy viewing
-4. **Click the extension icon** and start a debate!
+3. **分割表示に配置する**（見やすくするため）
+4. **拡張機能のアイコンをクリック**してディベートを開始！
 
-## Debate Topics Ideas
+## ディベートのトピック例
 
-### Philosophy & Ethics
-- "What is the nature of consciousness?"
-- "Is free will an illusion?"
-- "What makes an action morally right?"
-- "Can artificial intelligence be conscious?"
-- "What is the meaning of life?"
+### 哲学・倫理
+- "意識の本質とは何か？"
+- "自由意志は幻想か？"
+- "行動を道徳的に正しくするものは何か？"
+- "人工知能は意識を持つことができるか？"
+- "人生の意味とは何か？"
 
-### Science & Technology
-- "Should we colonize Mars?"
-- "Are cryptocurrencies the future of money?"
-- "Will AI replace most human jobs?"
-- "Is nuclear energy the solution to climate change?"
-- "Should gene editing in humans be allowed?"
+### 科学・技術
+- "火星に移住すべきか？"
+- "暗号通貨は貨幣の未来か？"
+- "AIはほとんどの人間の仕事を置き換えるか？"
+- "原子力エネルギーは気候変動の解決策か？"
+- "人間の遺伝子編集は許可されるべきか？"
 
-### Society & Politics
-- "What is the ideal form of government?"
-- "Should universal basic income be implemented?"
-- "Is globalization good for humanity?"
-- "How should we regulate social media?"
-- "What's the best approach to education reform?"
+### 社会・政治
+- "理想的な政府の形態とは何か？"
+- "ユニバーサルベーシックインカムは実施されるべきか？"
+- "グローバリゼーションは人類にとって良いことか？"
+- "ソーシャルメディアをどのように規制すべきか？"
+- "教育改革への最良のアプローチは何か？"
 
-### Fun & Creative
-- "Is a hot dog a sandwich?"
-- "Time travel vs teleportation: which is better?"
-- "Cats vs dogs: the ultimate debate"
-- "Is pineapple on pizza acceptable?"
-- "Which came first: the chicken or the egg?"
+### 楽しい・創造的
+- "ホットドッグはサンドイッチか？"
+- "タイムトラベルとテレポーテーション：どちらが良いか？"
+- "猫 vs 犬：究極のディベート"
+- "ピザにパイナップルは許容されるか？"
+- "鶏が先か卵が先か？"
 
-## Settings Explained
+## 設定の説明
 
-### Turn Limit (1-20)
-- **What it does**: Sets the maximum number of back-and-forth exchanges
-- **Recommendations**:
-  - **2-3 turns**: Quick exchanges, good for testing
-  - **5-7 turns**: Standard debates, balanced depth
-  - **10+ turns**: Deep discussions, extended exploration
+### ターン数制限（1-20）
+- **機能**: 最大のやり取り回数を設定します
+- **推奨設定**:
+  - **2-3ターン**: 短いやり取り、テストに適しています
+  - **5-7ターン**: 標準的なディベート、バランスの取れた深さ
+  - **10+ターン**: 深い議論、拡張的な探求
 
-### Delay (1-30 seconds)
-- **What it does**: Time to wait between responses before sending to the other AI
-- **Recommendations**:
-  - **1-2 seconds**: Fast-paced, but may miss responses
-  - **3-5 seconds**: Standard, works for most cases
-  - **10+ seconds**: For very long responses or slow connections
+### 遅延（1-30秒）
+- **機能**: 応答を他のAIに送信する前に待機する時間
+- **推奨設定**:
+  - **1-2秒**: 高速ペース、ただし応答を見逃す可能性あり
+  - **3-5秒**: 標準、ほとんどの場合に機能します
+  - **10+秒**: 非常に長い応答や遅い接続の場合
 
-### Topic (Optional)
-- **What it does**: Initial prompt sent to ChatGPT to start the debate
-- **Tips**:
-  - Be clear and specific
-  - Frame as a question or statement to debate
-  - Can be left empty to manually start the conversation
+### トピック（オプション）
+- **機能**: ディベートを開始するためにChatGPTに送信される最初のプロンプト
+- **ヒント**:
+  - 明確で具体的にする
+  - 議論する質問または声明として枠組みを作る
+  - 会話を手動で開始するために空白のままにすることができます
 
-## Advanced Usage
+## 高度な使用方法
 
-### Manual Start (No Topic)
+### 手動開始（トピックなし）
 
-If you leave the topic blank:
+トピックを空白のままにした場合：
 
-1. Start the debate in the extension
-2. Manually type your first message in either ChatGPT or Gemini
-3. Send it
-4. The extension will detect the response and automatically send it to the other AI
-5. The debate continues automatically from there
+1. 拡張機能でディベートを開始する
+2. ChatGPTまたはGeminiのいずれかで最初のメッセージを手動で入力する
+3. 送信する
+4. 拡張機能が応答を検出し、自動的に他のAIに送信します
+5. そこからディベートは自動的に継続します
 
-### Monitoring Progress
+### 進行状況の監視
 
-The **Activity Log** shows:
-- 🚀 When debates start
-- 📝 When each AI responds
-- ➡️ When messages are sent to the other AI
-- ✅ When debates complete
-- 🛑 When debates are stopped
-- ❌ Any errors that occur
+**アクティビティログ**には以下が表示されます：
+- 🚀 ディベートの開始
+- 📝 各AIの応答
+- ➡️ 他のAIへのメッセージ送信
+- ✅ ディベートの完了
+- 🛑 ディベートの停止
+- ❌ 発生したエラー
 
-### Stopping Early
+### 早期停止
 
-Click "Stop Debate" at any time to:
-- End the current debate
-- Prevent further automatic messages
-- Keep the conversation history intact
-- Allow you to manually continue if desired
+いつでも「Stop Debate」をクリックすると：
+- 現在のディベートを終了する
+- さらなる自動メッセージを防ぐ
+- 会話履歴をそのまま保持する
+- 必要に応じて手動で続行できるようにする
 
-## Best Practices
+## ベストプラクティス
 
-### For Video Recording
+### ビデオ録画の場合
 
-1. **Use full-screen or maximized windows**
-   - Cleaner look for recordings
-   - Split-view works great with screen recording software
+1. **全画面または最大化されたウィンドウを使用する**
+   - 録画のためのよりクリーンな外観
+   - 分割表示は画面録画ソフトウェアと相性が良い
 
-2. **Keep the extension popup visible**
-   - Shows the activity log
-   - Indicates debate status
-   - Position near the recorded area if possible
+2. **拡張機能のポップアップを表示しておく**
+   - アクティビティログを表示する
+   - ディベートのステータスを示す
+   - 可能であれば録画エリアの近くに配置する
 
-3. **Choose good topics**
-   - Interesting and engaging
-   - Not too technical unless that's your audience
-   - Clear starting point
+3. **良いトピックを選ぶ**
+   - 興味深く魅力的な内容
+   - 対象者向けでない限り、過度に技術的でないこと
+   - 明確な開始点
 
-4. **Adjust settings appropriately**
-   - Longer delays give viewers time to read
-   - More turns = longer videos
-   - Test first before recording
+4. **設定を適切に調整する**
+   - 長い遅延は視聴者に読む時間を与える
+   - より多いターン = より長いビデオ
+   - 録画前にテストする
 
-### For Research/Testing
+### 研究/テストの場合
 
-1. **Use varied topics**
-   - Test different types of questions
-   - Compare philosophical vs factual debates
-   - Try open-ended vs specific questions
+1. **多様なトピックを使用する**
+   - さまざまなタイプの質問をテストする
+   - 哲学的なディベートと事実に基づくディベートを比較する
+   - オープンエンドな質問と具体的な質問を試す
 
-2. **Document your findings**
-   - Save conversation transcripts
-   - Note interesting patterns
-   - Compare how different AIs approach topics
+2. **調査結果を文書化する**
+   - 会話の記録を保存する
+   - 興味深いパターンを記録する
+   - 異なるAIがトピックにどのようにアプローチするかを比較する
 
-3. **Experiment with settings**
-   - Try different turn limits
-   - Test various delay times
-   - See how topic phrasing affects responses
+3. **設定を実験する**
+   - 異なるターン数制限を試す
+   - さまざまな遅延時間をテストする
+   - トピックの表現が応答にどのように影響するかを確認する
 
-### For Entertainment
+### エンターテインメントの場合
 
-1. **Try fun topics**
-   - Pop culture debates
-   - Silly hypotheticals
-   - Creative scenarios
+1. **楽しいトピックを試す**
+   - ポップカルチャーのディベート
+   - ばかげた仮定
+   - 創造的なシナリオ
 
-2. **Let it run**
-   - Sometimes the best moments come after a few turns
-   - AIs can surprise you with creative responses
+2. **実行させておく**
+   - 最高の瞬間は数ターン後に来ることがある
+   - AIは創造的な応答で驚かせてくれる
 
-3. **Share with friends**
-   - Show them interesting exchanges
-   - Get topic suggestions
-   - Discuss the results
+3. **友達と共有する**
+   - 興味深いやり取りを見せる
+   - トピックの提案を得る
+   - 結果について議論する
 
-## Troubleshooting Common Issues
+## よくある問題のトラブルシューティング
 
-### Messages Not Sending
+### メッセージが送信されない
 
-**Symptoms**: Extension says it's sending, but messages don't appear
+**症状**: 拡張機能は送信していると表示するが、メッセージが表示されない
 
-**Solutions**:
-1. Refresh both AI pages
-2. Ensure you're signed in to both services
-3. Check that input boxes are visible and active
-4. Try increasing the delay setting
-5. Look for errors in the Activity Log
+**解決策**:
+1. 両方のAIページを更新する
+2. 両方のサービスにサインインしていることを確認する
+3. 入力ボックスが表示されてアクティブであることを確認する
+4. 遅延設定を増やしてみる
+5. アクティビティログでエラーを探す
 
-### Responses Not Detected
+### 応答が検出されない
 
-**Symptoms**: AI responds, but extension doesn't capture it
+**症状**: AIが応答するが、拡張機能がキャプチャしない
 
-**Solutions**:
-1. Wait longer - some responses take time
-2. Check if the AI is still generating (look for stop/generating indicators)
-3. The extension waits for responses to stabilize
-4. Refresh the page and try again
+**解決策**:
+1. もう少し待つ - 一部の応答には時間がかかる
+2. AIがまだ生成中かどうかを確認する（停止/生成中のインジケーターを探す）
+3. 拡張機能は応答が安定するのを待つ
+4. ページを更新して再試行する
 
-### Debate Stops Unexpectedly
+### ディベートが予期せず停止する
 
-**Symptoms**: Debate ends before reaching turn limit
+**症状**: ターン数制限に達する前にディベートが終了する
 
-**Possible causes**:
-1. One AI might have hit a rate limit
-2. Network connection issues
-3. Page was refreshed or navigated away
-4. Browser tab was closed or crashed
+**考えられる原因**:
+1. 一方のAIがレート制限に達した可能性がある
+2. ネットワーク接続の問題
+3. ページが更新されたか、離れた
+4. ブラウザタブが閉じられたかクラッシュした
 
-**Solutions**:
-1. Check the Activity Log for error messages
-2. Ensure stable internet connection
-3. Wait a few minutes if rate limited
-4. Start a new debate
+**解決策**:
+1. アクティビティログでエラーメッセージを確認する
+2. 安定したインターネット接続を確保する
+3. レート制限がある場合は数分待つ
+4. 新しいディベートを開始する
 
-### Wrong AI Receiving Messages
+### 間違ったAIがメッセージを受信する
 
-**Symptoms**: Messages go to the wrong AI or both AIs
+**症状**: メッセージが間違ったAIまたは両方のAIに送信される
 
-**Solutions**:
-1. Ensure only one ChatGPT tab and one Gemini tab are open
-2. Close extra tabs
-3. Refresh and try again
+**解決策**:
+1. ChatGPTタブとGeminiタブが1つずつのみ開いていることを確認する
+2. 余分なタブを閉じる
+3. 更新して再試行する
 
-## Tips & Tricks
+## ヒントとコツ
 
-### Getting Better Debates
+### より良いディベートを得る方法
 
-1. **Frame questions as debates**: "Should X be allowed?" works better than "Tell me about X"
-2. **Ask for arguments**: "Argue for/against..." encourages debate format
-3. **Use controversial topics**: More interesting exchanges
-4. **Request specific perspectives**: "Take the position that..."
+1. **質問をディベートとして枠組みする**: "Xは許可されるべきか？"は"Xについて教えて"よりも良い
+2. **議論を求める**: "賛成/反対を論じて..."はディベート形式を促進する
+3. **論争的なトピックを使用する**: より興味深いやり取り
+4. **特定の視点を要求する**: "...という立場を取って"
 
-### Saving Conversations
+### 会話を保存する
 
-Chrome extensions can't save conversations directly, but you can:
-1. Manually copy/paste exchanges into a document
-2. Take screenshots of interesting moments
-3. Use screen recording software for full debates
-4. Use browser's print-to-PDF feature
+Chrome拡張機能は会話を直接保存できませんが、以下の方法があります：
+1. やり取りを手動でコピー/貼り付けてドキュメントに保存する
+2. 興味深い瞬間のスクリーンショットを撮る
+3. 完全なディベートには画面録画ソフトウェアを使用する
+4. ブラウザのPDF印刷機能を使用する
 
-### Extending Debates
+### ディベートを延長する
 
-If a debate ends but you want more:
-1. Stop the current debate
-2. Manually add a follow-up question in either AI
-3. Start a new debate (it will continue from there)
+ディベートが終了したがもっと続けたい場合：
+1. 現在のディベートを停止する
+2. いずれかのAIで手動でフォローアップの質問を追加する
+3. 新しいディベートを開始する（そこから継続します）
 
-### Comparing AI Personalities
+### AIの個性を比較する
 
-Pay attention to how each AI:
-- Structures arguments
-- Uses language and tone
-- Handles controversial topics
-- Admits uncertainty
-- Builds on previous points
+各AIがどのように以下を行うかに注目する：
+- 議論を構造化する
+- 言語とトーンを使用する
+- 論争的なトピックを扱う
+- 不確実性を認める
+- 前のポイントに基づいて構築する
 
-## Examples of Good Debate Formats
+## 良いディベート形式の例
 
-### Structured Debate
+### 構造化されたディベート
 ```
-"You are AI A. AI B will argue that climate change is primarily human-caused. 
-You will argue the opposite position. Begin with your opening statement."
-```
-
-### Socratic Discussion
-```
-"Let's explore: What is intelligence? 
-Please ask me questions to help clarify this concept."
+"あなたはAI Aです。AI Bは気候変動が主に人間によって引き起こされたと主張します。
+あなたは反対の立場を論じてください。冒頭陳述から始めてください。"
 ```
 
-### Creative Collaboration
+### ソクラテス式の議論
 ```
-"Let's write a story together. I'll start with a premise, 
-you continue with the next sentence, and we'll alternate."
-```
-
-### Problem Solving
-```
-"How can we solve traffic congestion in major cities? 
-Let's brainstorm solutions together, building on each other's ideas."
+"探求しましょう：知能とは何か？
+この概念を明確にするために質問してください。"
 ```
 
-## Safety & Ethics
+### 創造的なコラボレーション
+```
+"一緒に物語を書きましょう。私が前提から始め、
+あなたが次の文を続け、交互に行います。"
+```
 
-### Remember
-- This tool automates web interactions
-- Respect both platforms' Terms of Service
-- Don't use for spam or abuse
-- Be aware of rate limits
-- Use responsibly
+### 問題解決
+```
+"大都市の交通渋滞をどのように解決できますか？
+お互いのアイデアに基づいて、一緒に解決策をブレインストーミングしましょう。"
+```
 
-### Privacy
-- No data is collected by the extension
-- All conversations stay between you and the AI services
-- Extension only runs on specified websites
+## 安全性と倫理
+
+### 覚えておいてください
+- このツールはウェブインタラクションを自動化します
+- 両プラットフォームの利用規約を尊重してください
+- スパムや悪用には使用しないでください
+- レート制限に注意してください
+- 責任を持って使用してください
+
+### プライバシー
+- 拡張機能によってデータは収集されません
+- すべての会話はあなたとAIサービスの間にとどまります
+- 拡張機能は指定されたウェブサイトでのみ実行されます
 
 ---
 
-**Enjoy exploring AI debates! 🎭**
+**AIディベートの探求をお楽しみください！ 🎭**
 
-Have questions? Check the [README](README.md) or [open an issue](https://github.com/tokumukansoya/Debate-AI-Extension-Chorme/issues).
+質問がありますか？[README](README.md)を確認するか、[issueを開いて](https://github.com/tokumukansoya/Debate-AI-Extension-Chorme/issues)ください。

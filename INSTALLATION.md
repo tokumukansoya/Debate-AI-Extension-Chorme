@@ -1,172 +1,172 @@
-# 📖 Installation Guide
+# 📖 インストールガイド
 
-## Prerequisites
+## 前提条件
 
-- Google Chrome browser (version 88 or higher recommended)
-- Active accounts for:
-  - ChatGPT ([chat.openai.com](https://chat.openai.com) or [chatgpt.com](https://chatgpt.com))
+- Google Chromeブラウザ（バージョン88以上を推奨）
+- アクティブなアカウント:
+  - ChatGPT ([chat.openai.com](https://chat.openai.com) または [chatgpt.com](https://chatgpt.com))
   - Google Gemini ([gemini.google.com](https://gemini.google.com))
 
-## Step-by-Step Installation
+## ステップバイステップのインストール
 
-### 1. Download the Extension
+### 1. 拡張機能をダウンロード
 
-**Option A: Clone from GitHub**
+**オプションA: GitHubからクローン**
 ```bash
 git clone https://github.com/tokumukansoya/Debate-AI-Extension-Chorme.git
 cd Debate-AI-Extension-Chorme
 ```
 
-**Option B: Download ZIP**
-1. Go to the GitHub repository
-2. Click the green "Code" button
-3. Select "Download ZIP"
-4. Extract the ZIP file to a location on your computer
+**オプションB: ZIPをダウンロード**
+1. GitHubリポジトリに移動
+2. 緑色の「Code」ボタンをクリック
+3. 「Download ZIP」を選択
+4. ZIPファイルをコンピュータ上の場所に展開
 
-### 2. Load Extension in Chrome
+### 2. Chromeで拡張機能を読み込む
 
-1. **Open Chrome Extensions Page**
-   - Type `chrome://extensions/` in the address bar, or
-   - Click the three-dot menu (⋮) → More Tools → Extensions
+1. **Chrome拡張機能ページを開く**
+   - アドレスバーに`chrome://extensions/`と入力、または
+   - 3点メニュー（⋮）→ その他のツール → 拡張機能をクリック
 
-2. **Enable Developer Mode**
-   - Look for the "Developer mode" toggle in the top-right corner
-   - Turn it ON (it should turn blue)
+2. **デベロッパーモードを有効化**
+   - 右上隅の「デベロッパーモード」トグルを探す
+   - ONにする（青色になるはず）
 
-3. **Load Unpacked Extension**
-   - Click the "Load unpacked" button that appears
-   - Navigate to the extension folder you downloaded/cloned
-   - Select the folder and click "Select Folder" (or "Open")
+3. **パッケージ化されていない拡張機能を読み込む**
+   - 表示される「パッケージ化されていない拡張機能を読み込む」ボタンをクリック
+   - ダウンロード/クローンした拡張機能フォルダに移動
+   - フォルダを選択して「フォルダを選択」（または「開く」）をクリック
 
-4. **Verify Installation**
-   - You should see "AI Debate Extension" appear in your extensions list
-   - The extension should be enabled (toggle switch is blue)
-   - Pin it to your toolbar by clicking the puzzle piece icon and pinning "AI Debate Extension"
+4. **インストールを確認**
+   - 拡張機能リストに「AIディベート拡張機能」が表示されるはずです
+   - 拡張機能が有効になっている必要があります（トグルスイッチが青色）
+   - パズルピースアイコンをクリックして「AIディベート拡張機能」をピン留めして、ツールバーに固定
 
-### 3. Set Up Your Workspace
+### 3. ワークスペースをセットアップ
 
-1. **Open ChatGPT**
-   - Navigate to [chat.openai.com](https://chat.openai.com) or [chatgpt.com](https://chatgpt.com)
-   - Sign in if you haven't already
-   - Start a new chat if needed
+1. **ChatGPTを開く**
+   - [chat.openai.com](https://chat.openai.com) または [chatgpt.com](https://chatgpt.com) に移動
+   - まだサインインしていない場合はサインイン
+   - 必要に応じて新しいチャットを開始
 
-2. **Open Gemini**
-   - Navigate to [gemini.google.com](https://gemini.google.com)
-   - Sign in with your Google account
-   - Ensure you're on a new or appropriate chat
+2. **Geminiを開く**
+   - [gemini.google.com](https://gemini.google.com) に移動
+   - Googleアカウントでサインイン
+   - 新しいチャットまたは適切なチャットにいることを確認
 
-3. **Arrange Windows**
-   - **Option A - Split Screen (Recommended):**
-     - Windows: Drag a window to the left/right edge until you see a snap outline
-     - Mac: Use a third-party tool like Rectangle, or manually resize
+3. **ウィンドウを配置**
+   - **オプションA - 分割画面（推奨）:**
+     - Windows: ウィンドウを左/右端にドラッグして、スナップアウトラインが表示されるまで
+     - Mac: Rectangleなどのサードパーティツールを使用するか、手動でリサイズ
    
-   - **Option B - Side by Side:**
-     - Manually resize browser windows to view both simultaneously
+   - **オプションB - 並べて表示:**
+     - 両方を同時に表示するようにブラウザウィンドウを手動でリサイズ
 
-## First-Time Setup
+## 初回セットアップ
 
-### 4. Test the Extension
+### 4. 拡張機能をテスト
 
-1. **Click the extension icon** in your Chrome toolbar (the purple icon you pinned)
+1. **Chromeツールバーの拡張機能アイコンをクリック**（ピン留めした紫色のアイコン）
 
-2. **Configure initial settings:**
-   - **Topic**: Enter a simple test topic like "Hello, let's test this system"
-   - **Turn Limit**: Set to 2 or 3 for initial testing
-   - **Delay**: Keep at 3 seconds
+2. **初期設定を構成:**
+   - **トピック**: 「こんにちは、このシステムをテストしましょう」のような簡単なテストトピックを入力
+   - **ターン制限**: 初期テストでは2または3に設定
+   - **遅延**: 3秒のままにしておく
 
-3. **Click "Start Debate"**
-   - Watch the Activity Log for updates
-   - You should see "🤖 AI Debate Active" indicators on both AI pages
-   - The topic will be sent to ChatGPT
-   - After ChatGPT responds, it will be sent to Gemini
-   - The process continues automatically
+3. **「ディベート開始」をクリック**
+   - アクティビティログで更新を確認
+   - 両方のAIページに「🤖 AIディベート実行中」インジケーターが表示されるはず
+   - トピックがChatGPTに送信されます
+   - ChatGPTが応答した後、Geminiに送信されます
+   - プロセスは自動的に続行されます
 
-4. **Verify it works:**
-   - Both AIs should respond in turn
-   - Messages should appear automatically
-   - Activity log should show progress
-   - You can stop at any time with "Stop Debate"
+4. **動作を確認:**
+   - 両方のAIが順番に応答するはず
+   - メッセージが自動的に表示されるはず
+   - アクティビティログに進行状況が表示されるはず
+   - 「ディベート停止」でいつでも停止できます
 
-## Troubleshooting Installation
+## インストールのトラブルシューティング
 
-### Extension won't load
-- **Error: "Manifest file is missing or unreadable"**
-  - Ensure you selected the correct folder containing `manifest.json`
-  - The folder structure should have `manifest.json` at the root level
+### 拡張機能が読み込めない
+- **エラー: "Manifest file is missing or unreadable"**
+  - `manifest.json`を含む正しいフォルダを選択したことを確認
+  - フォルダ構造はルートレベルに`manifest.json`がある必要があります
 
-- **Error: "Manifest version 3 is not supported"**
-  - Update Chrome to version 88 or higher
-  - Check: Menu → Help → About Google Chrome
+- **エラー: "Manifest version 3 is not supported"**
+  - Chromeをバージョン88以上に更新
+  - 確認方法: メニュー → ヘルプ → Google Chromeについて
 
-### Extension loads but doesn't work
-1. **Refresh AI pages**
-   - After installing, refresh both ChatGPT and Gemini pages
-   - The content scripts need to be injected
+### 拡張機能は読み込まれるが動作しない
+1. **AIページを更新**
+   - インストール後、ChatGPTとGeminiページの両方を更新
+   - コンテンツスクリプトを注入する必要があります
 
-2. **Check permissions**
-   - Go to `chrome://extensions/`
-   - Find "AI Debate Extension"
-   - Click "Details"
-   - Ensure site permissions are granted
+2. **権限を確認**
+   - `chrome://extensions/`に移動
+   - 「AIディベート拡張機能」を見つける
+   - 「詳細」をクリック
+   - サイト権限が付与されていることを確認
 
-3. **Check console for errors**
-   - Open Developer Tools (F12)
-   - Go to Console tab
-   - Look for any red error messages
-   - Report these in GitHub issues if needed
+3. **コンソールでエラーを確認**
+   - 開発者ツールを開く（F12）
+   - コンソールタブに移動
+   - 赤色のエラーメッセージを探す
+   - 必要に応じてGitHub issuesで報告
 
-### Visual indicator doesn't appear
-- The "🤖 AI Debate Active" indicator appears when a debate is running
-- If not visible:
-  - Check if debate actually started (check Activity Log)
-  - Try refreshing the AI pages
-  - Ensure z-index isn't being overridden by the site
+### 視覚的インジケーターが表示されない
+- 「🤖 AIディベート実行中」インジケーターはディベート実行中に表示されます
+- 表示されない場合:
+  - ディベートが実際に開始されたか確認（アクティビティログを確認）
+  - AIページを更新してみる
+  - z-indexがサイトによってオーバーライドされていないことを確認
 
-## Updating the Extension
+## 拡張機能の更新
 
-When a new version is released:
+新しいバージョンがリリースされたとき:
 
-1. **Pull latest changes** (if using Git):
+1. **最新の変更をプル**（Gitを使用している場合）:
    ```bash
    cd Debate-AI-Extension-Chorme
    git pull origin main
    ```
 
-2. **Or download new ZIP** and extract to replace old files
+2. **または新しいZIPをダウンロード**して展開し、古いファイルを置き換え
 
-3. **Reload extension in Chrome:**
-   - Go to `chrome://extensions/`
-   - Find "AI Debate Extension"
-   - Click the refresh/reload icon (circular arrow)
+3. **Chromeで拡張機能をリロード:**
+   - `chrome://extensions/`に移動
+   - 「AIディベート拡張機能」を見つける
+   - 更新/リロードアイコン（円形の矢印）をクリック
 
-## Uninstalling
+## アンインストール
 
-1. Go to `chrome://extensions/`
-2. Find "AI Debate Extension"
-3. Click "Remove"
-4. Confirm removal
-5. Optionally delete the extension folder from your computer
+1. `chrome://extensions/`に移動
+2. 「AIディベート拡張機能」を見つける
+3. 「削除」をクリック
+4. 削除を確認
+5. オプションでコンピュータから拡張機能フォルダを削除
 
-## Getting Help
+## ヘルプの取得
 
-If you encounter issues:
+問題が発生した場合:
 
-1. Check the [Troubleshooting section in README.md](README.md#-troubleshooting)
-2. Look through [GitHub Issues](https://github.com/tokumukansoya/Debate-AI-Extension-Chorme/issues)
-3. Create a new issue with:
-   - Chrome version
-   - Operating system
-   - Detailed description of the problem
-   - Console error messages (if any)
-   - Screenshots (if applicable)
+1. [README.mdのトラブルシューティングセクション](README.md#-トラブルシューティング)を確認
+2. [GitHub Issues](https://github.com/tokumukansoya/Debate-AI-Extension-Chorme/issues)を確認
+3. 以下の情報を含む新しいissueを作成:
+   - Chromeバージョン
+   - オペレーティングシステム
+   - 問題の詳細な説明
+   - コンソールエラーメッセージ（ある場合）
+   - スクリーンショット（該当する場合）
 
-## Next Steps
+## 次のステップ
 
-Once installed, check out:
-- [Usage Guide](README.md#-usage) - How to run debates effectively
-- [Tips for Recording](README.md#-tips-for-recording) - Making great videos
-- [Technical Details](README.md#-technical-details) - How it works under the hood
+インストール後、以下を確認してください:
+- [使い方ガイド](README.md#-使い方) - 効果的にディベートを実行する方法
+- [録画のヒント](README.md#-録画のヒント) - 素晴らしいビデオを作成する
+- [技術詳細](README.md#-技術詳細) - 内部動作の仕組み
 
 ---
 
-**Happy debating! 🎭**
+**ハッピーディベーティング！ 🎭**
