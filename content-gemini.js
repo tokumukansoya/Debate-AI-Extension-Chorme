@@ -1,6 +1,12 @@
 // Content script for Gemini (gemini.google.com)
 console.log('AI Debate Extension: Gemini content script loaded');
 
+// Participant info
+let participantInfo = {
+  participant: 0,
+  aiType: 'gemini'
+};
+
 // Selectors for Gemini interface
 const SELECTORS = {
   inputBox: 'rich-textarea[aria-label*="prompt"]',
@@ -29,6 +35,8 @@ function getLatestResponse() {
 
 // Send message to Gemini
 function sendMessage(message) {
+  console.log('Gemini: Attempting to send message:', message.substring(0, 50) + '...');
+  
   // Find input box - try multiple selectors
   let inputBox = document.querySelector(SELECTORS.inputBox);
   if (!inputBox) {
@@ -82,7 +90,7 @@ function sendMessage(message) {
     
     if (sendButton && !sendButton.disabled) {
       sendButton.click();
-      console.log('Message sent to Gemini');
+      console.log('Message sent to Gemini successfully');
       
       // Wait for response
       waitForResponse();
@@ -134,13 +142,15 @@ function waitForResponse() {
         lastResponseText = response;
         clearInterval(responseCheckInterval);
         
+        console.log('Gemini response captured, length:', response.length);
+        
         // Send to background script
         chrome.runtime.sendMessage({
           action: 'aiResponded',
           response: response
         });
         
-        console.log('Gemini response captured and sent');
+        console.log('Gemini response sent to background script');
       }
     }
 
@@ -157,35 +167,173 @@ function waitForResponse() {
 
 // Listen for messages from background script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log('Gemini: Received message:', message.action);
+  
   if (message.action === 'sendMessage') {
     const success = sendMessage(message.message);
     sendResponse({ success });
+  } else if (message.action === 'setParticipantInfo') {
+    participantInfo = {
+      participant: message.participant,
+      aiType: message.aiType
+    };
+    updateIndicator();
+    sendResponse({ success: true });
   }
   return true;
 });
 
 // Add visual indicator that extension is active
 function addIndicator() {
-  if (document.getElementById('ai-debate-indicator')) return;
+  updateIndicator();
+}
+
+function updateIndicator() {
+  let indicator = document.getElementById('ai-debate-indicator');
   
-  const indicator = document.createElement('div');
-  indicator.id = 'ai-debate-indicator';
-  indicator.style.cssText = `
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'ai-debate-indicator';
+    indicator.style.cssText = `
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 999999;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    `;
+    document.body.appendChild(indicator);
+  }
+  
+  let participantText = '';
+  if (participantInfo.participant > 0) {
+    participantText = `<div style="font-size: 11px; opacity: 0.9;">参加者${participantInfo.participant} (${participantInfo.aiType === 'chatgpt' ? 'ChatGPT' : 'Gemini'})</div>`;
+  }
+  
+  indicator.innerHTML = `
+    <div>🤖 AIディベート実行中</div>
+    ${participantText}
+  `;
+}
+
+// Add settings button
+function addSettingsButton() {
+  if (document.getElementById('ai-debate-settings-btn')) return;
+  
+  const settingsBtn = document.createElement('button');
+  settingsBtn.id = 'ai-debate-settings-btn';
+  settingsBtn.style.cssText = `
     position: fixed;
-    top: 10px;
-    right: 10px;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    z-index: 999999;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 999998;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  `;
+  settingsBtn.innerHTML = '⚙️';
+  settingsBtn.title = 'AIディベート設定';
+  
+  settingsBtn.addEventListener('mouseenter', () => {
+    settingsBtn.style.transform = 'scale(1.1)';
+    settingsBtn.style.boxShadow = '0 6px 16px rgba(0,0,0,0.4)';
+  });
+  
+  settingsBtn.addEventListener('mouseleave', () => {
+    settingsBtn.style.transform = 'scale(1)';
+    settingsBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+  });
+  
+  settingsBtn.addEventListener('click', () => {
+    // Open the extension popup by sending a message to background
+    chrome.runtime.sendMessage({ action: 'openPopup' }).catch(() => {
+      // Fallback: show a modal with instructions
+      showSettingsModal();
+    });
+  });
+  
+  document.body.appendChild(settingsBtn);
+}
+
+function showSettingsModal() {
+  if (document.getElementById('ai-debate-settings-modal')) return;
+  
+  const modal = document.createElement('div');
+  modal.id = 'ai-debate-settings-modal';
+  modal.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: black;
+    padding: 24px;
+    border-radius: 12px;
+    z-index: 9999999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    max-width: 400px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   `;
-  indicator.textContent = '🤖 AIディベート実行中';
-  document.body.appendChild(indicator);
+  
+  modal.innerHTML = `
+    <h2 style="margin: 0 0 16px 0; font-size: 20px;">AIディベート設定</h2>
+    <p style="margin: 0 0 16px 0; line-height: 1.6;">
+      設定にアクセスするには、ブラウザのツールバーにある拡張機能アイコン（🤖）をクリックしてください。
+    </p>
+    <button id="close-settings-modal" style="
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    ">閉じる</button>
+  `;
+  
+  const overlay = document.createElement('div');
+  overlay.id = 'ai-debate-settings-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999998;
+  `;
+  
+  document.body.appendChild(overlay);
+  document.body.appendChild(modal);
+  
+  const closeModal = () => {
+    modal.remove();
+    overlay.remove();
+  };
+  
+  document.getElementById('close-settings-modal').addEventListener('click', closeModal);
+  overlay.addEventListener('click', closeModal);
 }
 
 addIndicator();
+addSettingsButton();
