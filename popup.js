@@ -6,9 +6,7 @@ let debateState = {
   topic: '',
   delay: 3000,
   ai1: 'chatgpt',
-  ai2: 'gemini',
-  persona1: '',
-  persona2: ''
+  ai2: 'gemini'
 };
 
 // DOM elements
@@ -22,18 +20,14 @@ const turnLimitInput = document.getElementById('turnLimit');
 const delaySecondsInput = document.getElementById('delaySeconds');
 const ai1Select = document.getElementById('ai1Select');
 const ai2Select = document.getElementById('ai2Select');
-const persona1Input = document.getElementById('persona1Input');
-const persona2Input = document.getElementById('persona2Input');
 
 // Load saved settings
-chrome.storage.local.get(['debateTopic', 'turnLimit', 'delaySeconds', 'ai1', 'ai2', 'persona1', 'persona2'], (result) => {
+chrome.storage.local.get(['debateTopic', 'turnLimit', 'delaySeconds', 'ai1', 'ai2'], (result) => {
   if (result.debateTopic) debateTopicInput.value = result.debateTopic;
   if (result.turnLimit) turnLimitInput.value = result.turnLimit;
   if (result.delaySeconds) delaySecondsInput.value = result.delaySeconds;
   if (result.ai1) ai1Select.value = result.ai1;
   if (result.ai2) ai2Select.value = result.ai2;
-  if (result.persona1) persona1Input.value = result.persona1;
-  if (result.persona2) persona2Input.value = result.persona2;
 });
 
 // Save settings on change
@@ -55,14 +49,6 @@ ai1Select.addEventListener('change', () => {
 
 ai2Select.addEventListener('change', () => {
   chrome.storage.local.set({ ai2: ai2Select.value });
-});
-
-persona1Input.addEventListener('change', () => {
-  chrome.storage.local.set({ persona1: persona1Input.value });
-});
-
-persona2Input.addEventListener('change', () => {
-  chrome.storage.local.set({ persona2: persona2Input.value });
 });
 
 // Add log entry
@@ -93,8 +79,6 @@ startBtn.addEventListener('click', async () => {
   const delaySeconds = parseInt(delaySecondsInput.value) || 3;
   const ai1 = ai1Select.value;
   const ai2 = ai2Select.value;
-  const persona1 = persona1Input.value.trim();
-  const persona2 = persona2Input.value.trim();
 
   // Validation
   if (turnLimit < 1 || turnLimit > 20) {
@@ -114,9 +98,7 @@ startBtn.addEventListener('click', async () => {
     topic: topic,
     delay: delaySeconds * 1000,
     ai1: ai1,
-    ai2: ai2,
-    persona1: persona1,
-    persona2: persona2
+    ai2: ai2
   };
 
   // Send message to background script
@@ -131,13 +113,6 @@ startBtn.addEventListener('click', async () => {
   const ai1Name = ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
   const ai2Name = ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
   addLog(`🚀 ディベート開始: ${ai1Name} vs ${ai2Name}${topic ? ` - "${topic}"` : ''}`);
-  
-  if (persona1) {
-    addLog(`👤 参加者1のペルソナ: ${persona1.length > 50 ? persona1.substring(0, 50) + '...' : persona1}`);
-  }
-  if (persona2) {
-    addLog(`👤 参加者2のペルソナ: ${persona2.length > 50 ? persona2.substring(0, 50) + '...' : persona2}`);
-  }
   
   if (!topic) {
     addLog('ℹ️ トピックが指定されていないため、手動で会話を開始してください');

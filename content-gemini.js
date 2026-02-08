@@ -4,8 +4,7 @@ console.log('AI Debate Extension: Gemini content script loaded');
 // Participant info
 let participantInfo = {
   participant: 0,
-  aiType: 'gemini',
-  persona: ''
+  aiType: 'gemini'
 };
 
 // Selectors for Gemini interface
@@ -176,8 +175,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.action === 'setParticipantInfo') {
     participantInfo = {
       participant: message.participant,
-      aiType: message.aiType,
-      persona: message.persona
+      aiType: message.aiType
     };
     updateIndicator();
     sendResponse({ success: true });

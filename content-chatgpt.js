@@ -4,8 +4,7 @@ console.log('AI Debate Extension: ChatGPT content script loaded');
 // Participant info
 let participantInfo = {
   participant: 0,
-  aiType: 'chatgpt',
-  persona: ''
+  aiType: 'chatgpt'
 };
 
 // Selectors for ChatGPT interface
@@ -138,8 +137,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.action === 'setParticipantInfo') {
     participantInfo = {
       participant: message.participant,
-      aiType: message.aiType,
-      persona: message.persona
+      aiType: message.aiType
     };
     updateIndicator();
     sendResponse({ success: true });

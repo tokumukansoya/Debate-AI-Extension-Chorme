@@ -10,9 +10,7 @@ let debateState = {
   currentSpeaker: 'ai1', // 'ai1' or 'ai2'
   participant1TabId: null,
   participant2TabId: null,
-  lastResponse: '',
-  persona1: '', // Persona for AI 1
-  persona2: ''  // Persona for AI 2
+  lastResponse: ''
 };
 
 // Find AI tabs
@@ -127,30 +125,22 @@ async function startDebate(config) {
   chrome.tabs.sendMessage(participant1Tab.id, {
     action: 'setParticipantInfo',
     participant: 1,
-    aiType: debateState.ai1,
-    persona: debateState.persona1
+    aiType: debateState.ai1
   }).catch(() => {});
   
   chrome.tabs.sendMessage(participant2Tab.id, {
     action: 'setParticipantInfo',
     participant: 2,
-    aiType: debateState.ai2,
-    persona: debateState.persona2
+    aiType: debateState.ai2
   }).catch(() => {});
 
   // Start with AI 1 if there's a topic
   if (config.topic) {
-    // Prepend persona if provided
-    let messageToSend = config.topic;
-    if (config.persona1) {
-      messageToSend = `${config.persona1}\n\n${config.topic}`;
-    }
-    
     sendLog(`💬 トピックを${ai1Name}（参加者1）に送信中...`);
     try {
       const response = await chrome.tabs.sendMessage(participant1Tab.id, {
         action: 'sendMessage',
-        message: messageToSend
+        message: config.topic
       });
       
       if (!response || !response.success) {
