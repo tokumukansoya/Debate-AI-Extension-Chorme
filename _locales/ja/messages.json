@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "AIディベート拡張機能",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "AIシステム間のディベートを実現: ChatGPT vs Gemini、ChatGPT vs ChatGPT、またはGemini vs Gemini",
+    "description": "Description of the extension"
+  }
+}

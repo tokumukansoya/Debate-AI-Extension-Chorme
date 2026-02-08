@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "AIディベート拡張機能",
+  "name": "__MSG_extensionName__",
   "version": "1.0.0",
-  "description": "AIシステム間のディベートを実現: ChatGPT vs Gemini、ChatGPT vs ChatGPT、またはGemini vs Gemini",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "ja",
   "permissions": [
     "activeTab",
     "storage",

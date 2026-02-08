@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "AI Debate Extension",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "Enable debates between AI systems: ChatGPT vs Gemini, ChatGPT vs ChatGPT, or Gemini vs Gemini",
+    "description": "Description of the extension"
+  }
+}
