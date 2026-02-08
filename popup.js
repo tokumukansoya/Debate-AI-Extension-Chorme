@@ -133,10 +133,10 @@ startBtn.addEventListener('click', async () => {
   addLog(`🚀 ディベート開始: ${ai1Name} vs ${ai2Name}${topic ? ` - "${topic}"` : ''}`);
   
   if (persona1) {
-    addLog(`👤 参加者1のペルソナ: ${persona1.substring(0, 50)}...`);
+    addLog(`👤 参加者1のペルソナ: ${persona1.length > 50 ? persona1.substring(0, 50) + '...' : persona1}`);
   }
   if (persona2) {
-    addLog(`👤 参加者2のペルソナ: ${persona2.substring(0, 50)}...`);
+    addLog(`👤 参加者2のペルソナ: ${persona2.length > 50 ? persona2.substring(0, 50) + '...' : persona2}`);
   }
   
   if (!topic) {
