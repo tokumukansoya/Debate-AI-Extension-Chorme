@@ -10,7 +10,9 @@ let debateState = {
   currentSpeaker: 'ai1', // 'ai1' or 'ai2'
   participant1TabId: null,
   participant2TabId: null,
-  lastResponse: ''
+  lastResponse: '',
+  persona1: '', // Persona for AI 1
+  persona2: ''  // Persona for AI 2
 };
 
 // Find AI tabs
@@ -121,13 +123,34 @@ async function startDebate(config) {
   debateState.participant1TabId = participant1Tab.id;
   debateState.participant2TabId = participant2Tab.id;
 
+  // Send participant info to tabs for better identification
+  chrome.tabs.sendMessage(participant1Tab.id, {
+    action: 'setParticipantInfo',
+    participant: 1,
+    aiType: debateState.ai1,
+    persona: debateState.persona1
+  }).catch(() => {});
+  
+  chrome.tabs.sendMessage(participant2Tab.id, {
+    action: 'setParticipantInfo',
+    participant: 2,
+    aiType: debateState.ai2,
+    persona: debateState.persona2
+  }).catch(() => {});
+
   // Start with AI 1 if there's a topic
   if (config.topic) {
+    // Prepend persona if provided
+    let messageToSend = config.topic;
+    if (config.persona1) {
+      messageToSend = `${config.persona1}\n\n${config.topic}`;
+    }
+    
     sendLog(`💬 トピックを${ai1Name}（参加者1）に送信中...`);
     try {
       const response = await chrome.tabs.sendMessage(participant1Tab.id, {
         action: 'sendMessage',
-        message: config.topic
+        message: messageToSend
       });
       
       if (!response || !response.success) {
@@ -158,12 +181,18 @@ function stopDebate() {
 
 // Handle response from AI
 async function handleAIResponse(tabId, response) {
-  if (!debateState.isActive) return;
+  if (!debateState.isActive) {
+    console.log('Debate not active, ignoring response from tab', tabId);
+    return;
+  }
 
   const isFromParticipant1 = tabId === debateState.participant1TabId;
   const isFromParticipant2 = tabId === debateState.participant2TabId;
 
-  if (!isFromParticipant1 && !isFromParticipant2) return;
+  if (!isFromParticipant1 && !isFromParticipant2) {
+    console.log('Response from unknown tab', tabId);
+    return;
+  }
 
   // Determine AI names for logging
   const speakerType = isFromParticipant1 ? debateState.ai1 : debateState.ai2;
@@ -171,7 +200,8 @@ async function handleAIResponse(tabId, response) {
   const speaker = speakerType === 'chatgpt' ? 'ChatGPT' : 'Gemini';
   
   // Log the response
-  sendLog(`📝 ${speaker} (Participant ${participantNum}) responded`);
+  sendLog(`📝 ${speaker} (参加者${participantNum}) が回答しました`);
+  console.log(`Response from Participant ${participantNum} (${speaker}):`, response.substring(0, 100) + '...');
 
   debateState.lastResponse = response;
   debateState.currentTurn++;
@@ -189,13 +219,18 @@ async function handleAIResponse(tabId, response) {
 
   // Wait before sending to the other AI
   setTimeout(async () => {
-    if (!debateState.isActive) return;
+    if (!debateState.isActive) {
+      console.log('Debate ended before sending response');
+      return;
+    }
 
     try {
       if (isFromParticipant1) {
         // Send to Participant 2
         const ai2Name = debateState.ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
         sendLog(`➡️ ${ai2Name}（参加者2）に送信中...`);
+        console.log(`Sending from Participant 1 to Participant 2 (tab ${debateState.participant2TabId})`);
+        
         const sendResult = await chrome.tabs.sendMessage(debateState.participant2TabId, {
           action: 'sendMessage',
           message: response
@@ -204,11 +239,14 @@ async function handleAIResponse(tabId, response) {
         if (!sendResult || !sendResult.success) {
           throw new Error('メッセージの送信に失敗しました');
         }
-        debateState.currentSpeaker = 'ai1';
+        console.log('Successfully sent to Participant 2');
+        debateState.currentSpeaker = 'ai2';
       } else {
         // Send to Participant 1
         const ai1Name = debateState.ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
         sendLog(`➡️ ${ai1Name}（参加者1）に送信中...`);
+        console.log(`Sending from Participant 2 to Participant 1 (tab ${debateState.participant1TabId})`);
+        
         const sendResult = await chrome.tabs.sendMessage(debateState.participant1TabId, {
           action: 'sendMessage',
           message: response
@@ -217,13 +255,15 @@ async function handleAIResponse(tabId, response) {
         if (!sendResult || !sendResult.success) {
           throw new Error('メッセージの送信に失敗しました');
         }
-        debateState.currentSpeaker = 'ai2';
+        console.log('Successfully sent to Participant 1');
+        debateState.currentSpeaker = 'ai1';
       }
     } catch (error) {
       const targetAI = isFromParticipant1 ? 
         (debateState.ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini') :
         (debateState.ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini');
       
+      console.error(`Error sending to ${targetAI}:`, error);
       sendLog(`❌ ${targetAI}へのメッセージ送信エラー: ${error.message}`);
       sendLog(`必要な条件:\n• ${targetAI}ページが開いていることを確認してください\n• ${targetAI}にログインしていることを確認してください\n• ページを更新してから再試行してください`);
       
