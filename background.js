@@ -1,4 +1,6 @@
 // Background service worker for coordinating the debate
+const MIN_RESPONSE_LENGTH = 5;
+
 let debateState = {
   isActive: false,
   isWaitingForFirstInput: false,
@@ -241,7 +243,7 @@ async function handleAIResponse(tabId, response) {
   if (!isP1 && !isP2) return;
 
   // Validate response content
-  if (!response || typeof response !== 'string' || response.trim().length < 5) {
+  if (!response || typeof response !== 'string' || response.trim().length < MIN_RESPONSE_LENGTH) {
     sendLog('⚠️ 空または無効な応答を受信 - スキップ');
     return;
   }
