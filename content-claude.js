@@ -58,6 +58,9 @@ function sendMessage(message) {
     // Also dispatch input just in case
     inputBox.dispatchEvent(new Event('input', { bubbles: true }));
 
+    // Snapshot current response to avoid detecting stale responses
+    lastResponseText = getLatestResponse() || '';
+
     // Wait and click send
     setTimeout(() => {
         const sendButton = document.querySelector('button[aria-label="Send Message"]') ||
@@ -147,6 +150,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         participantInfo.currentTurn = message.currentTurn;
         participantInfo.maxTurns = message.maxTurns;
         updateIndicator();
+        sendResponse({ success: true });
     }
     return true;
 });

@@ -72,6 +72,9 @@ function sendMessage(message) {
   // Focus the input
   inputBox.focus();
 
+  // Snapshot current response to avoid detecting stale responses
+  lastResponseText = getLatestResponse() || '';
+
   // Wait a bit for UI to update
   setTimeout(() => {
     // Find and click send button
@@ -187,6 +190,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     participantInfo.currentTurn = message.currentTurn;
     participantInfo.maxTurns = message.maxTurns;
     updateIndicator();
+    sendResponse({ success: true });
   }
   return true;
 });

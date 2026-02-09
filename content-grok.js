@@ -61,6 +61,9 @@ function sendMessage(message) {
     // Dispatch input event just in case
     inputBox.dispatchEvent(new Event('input', { bubbles: true }));
 
+    // Snapshot current response to avoid detecting stale responses
+    lastResponseText = getLatestResponse() || '';
+
     // Wait a bit and click send
     setTimeout(() => {
         const sendButton = document.querySelector(SELECTORS.sendButton) ||
@@ -147,6 +150,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         participantInfo.currentTurn = message.currentTurn;
         participantInfo.maxTurns = message.maxTurns;
         updateIndicator();
+        sendResponse({ success: true });
     }
     return true;
 });

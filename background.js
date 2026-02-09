@@ -2,6 +2,7 @@
 let debateState = {
   isActive: false,
   isWaitingForFirstInput: false,
+  isProcessingResponse: false,
   turnsP1: 0,
   turnsP2: 0,
   maxRounds: 5, // User setting (e.g. 5 rounds)
@@ -67,6 +68,23 @@ function sendLog(message) {
   chrome.runtime.sendMessage({ type: 'log', message }).catch(() => { });
 }
 
+// Retry helper for sending messages to tabs (content scripts may not be ready)
+async function sendMessageToTabWithRetry(tabId, message, maxRetries = 2) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await chrome.tabs.sendMessage(tabId, message);
+      return response;
+    } catch (error) {
+      if (attempt < maxRetries) {
+        sendLog(`⚠️ 送信リトライ中... (${attempt + 1}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+
 async function startDebate(config) {
   // If topic is empty, we are entering "Monitoring Mode" waiting for manual input
   const isMonitoringMode = !config.topic;
@@ -77,6 +95,7 @@ async function startDebate(config) {
     maxRounds: config.maxTurns || 5, // Interpret as Rounds
     isActive: true,
     isWaitingForFirstInput: isMonitoringMode,
+    isProcessingResponse: false,
     turnsP1: 0,
     turnsP2: 0,
     currentSpeaker: 'ai1',
@@ -119,7 +138,7 @@ async function startDebate(config) {
     sendLog(`ℹ️ 設定: ${debateState.maxRounds}ラウンド (各${debateState.maxRounds}回)`);
     sendLog(`💬 トピックを${getAIName(debateState.ai1)}に送信中...`);
     try {
-      await chrome.tabs.sendMessage(debateState.participant1TabId, { action: 'sendMessage', message: config.topic });
+      await sendMessageToTabWithRetry(debateState.participant1TabId, { action: 'sendMessage', message: config.topic });
       debateState.currentSpeaker = 'ai2';
     } catch (error) {
       sendLog(`❌ 送信エラー: ${error.message}`);
@@ -135,6 +154,7 @@ async function startDebate(config) {
 function stopDebate() {
   debateState.isActive = false;
   debateState.isWaitingForFirstInput = false;
+  debateState.isProcessingResponse = false;
   sendLog('Debate stopped');
 }
 
@@ -182,7 +202,7 @@ async function continueDebate() {
   sendLog(`➡️ ${targetName}（参加者${targetPNum}）に再送信中...`);
 
   try {
-    await chrome.tabs.sendMessage(targetTabId, { action: 'sendMessage', message: debateState.lastResponse });
+    await sendMessageToTabWithRetry(targetTabId, { action: 'sendMessage', message: debateState.lastResponse });
   } catch (e) {
     sendLog(`❌ 送信エラー (${targetName}): ${e.message}`);
     debateState.isActive = false;
@@ -205,6 +225,13 @@ async function handleManualStart(senderTab, aiType) {
 
 async function handleAIResponse(tabId, response) {
   if (!debateState.isActive) return;
+
+  // Guard against duplicate/concurrent response processing
+  if (debateState.isProcessingResponse) {
+    sendLog('⚠️ 応答処理中に別の応答を受信 - スキップ');
+    return;
+  }
+
   if (debateState.isWaitingForFirstInput && tabId === debateState.participant1TabId) {
     debateState.isWaitingForFirstInput = false;
   }
@@ -212,6 +239,15 @@ async function handleAIResponse(tabId, response) {
   const isP1 = tabId === debateState.participant1TabId;
   const isP2 = tabId === debateState.participant2TabId;
   if (!isP1 && !isP2) return;
+
+  // Validate response content
+  if (!response || typeof response !== 'string' || response.trim().length < 5) {
+    sendLog('⚠️ 空または無効な応答を受信 - スキップ');
+    return;
+  }
+  response = response.trim();
+
+  debateState.isProcessingResponse = true;
 
   const speakerName = isP1 ? getAIName(debateState.ai1) : getAIName(debateState.ai2);
   const pNum = isP1 ? '1' : '2';
@@ -245,43 +281,32 @@ async function handleAIResponse(tabId, response) {
   // Check termination: BOTH must reach maxRounds
   if (debateState.turnsP1 >= debateState.maxRounds && debateState.turnsP2 >= debateState.maxRounds) {
     debateState.isActive = false;
+    debateState.isProcessingResponse = false;
     sendLog('✅ Debate completed');
-    // Send total turns as sum or rounds? Sending rounds for clarity in log maybe? 
-    // Popup expects 'turns', let's send maxRounds
     chrome.runtime.sendMessage({ type: 'debateEnded', turns: debateState.maxRounds }).catch(() => { });
     return;
   }
 
   // Send to other AI
   setTimeout(async () => {
-    if (!debateState.isActive) return;
-
-    // Logic: P1 just finished -> Send to P2. P2 just finished -> Send to P1.
-
-    // Are we done? (Wait, I checked termination above). 
-    // However, if P1 reached max but P2 hasn't, we still continue to P2.
-    // If P2 reached max but P1 hasn't... (Less likely in alternating debate, but possible if manual interference).
-
-    // Normal case: P1 (1/5) -> P2 (0/5). Send to P2.
-    // P2 (1/5). End loop? No, max is 5.
+    if (!debateState.isActive) {
+      debateState.isProcessingResponse = false;
+      return;
+    }
 
     const targetTabId = isP1 ? debateState.participant2TabId : debateState.participant1TabId;
     const targetName = isP1 ? getAIName(debateState.ai2) : getAIName(debateState.ai1);
     const targetPNum = isP1 ? '2' : '1';
 
-    // Optimization: If target has already reached max rounds, should we stop?
-    // If P1 (5/5) sends to P2 (4/5). P2 will respond -> (5/5). Then stop. Correct.
-    // If P1 (5/5) sends to P2 (5/5). Should not happen because check above would catch it immediately after P2's turn.
-    // Wait, after P2 (5/5), check above catches it turned off isActive. So we won't be here.
-    // What if P1 (5/5) finished, but P2 is (4/5)? We proceed.
-
     sendLog(`➡️ ${targetName}（参加者${targetPNum}）に送信中...`);
 
     try {
-      await chrome.tabs.sendMessage(targetTabId, { action: 'sendMessage', message: response });
+      await sendMessageToTabWithRetry(targetTabId, { action: 'sendMessage', message: response });
     } catch (e) {
       sendLog(`❌ 送信エラー (${targetName}): ${e.message}`);
       debateState.isActive = false;
+    } finally {
+      debateState.isProcessingResponse = false;
     }
   }, debateState.delay);
 }
