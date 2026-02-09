@@ -48,18 +48,27 @@ function sendMessage(message) {
     return false;
   }
 
-  // Set the message
-  // For ContentEditable div/p or Textarea
+  // Set the message - handle textarea vs contenteditable separately
   inputBox.focus();
-  inputBox.value = message;
-  inputBox.innerHTML = `<p>${message}</p>`; // Fallback for contenteditable
 
-  // Dispatch events to trigger React/Framework listeners
-  inputBox.dispatchEvent(new Event('input', { bubbles: true }));
-  inputBox.dispatchEvent(new Event('change', { bubbles: true }));
+  if (inputBox.tagName === 'TEXTAREA') {
+    // For native textarea elements
+    inputBox.value = message;
+    inputBox.dispatchEvent(new Event('input', { bubbles: true }));
+    inputBox.dispatchEvent(new Event('change', { bubbles: true }));
+  } else {
+    // For contenteditable div (ProseMirror in newer ChatGPT)
+    // Use execCommand for reliable React/ProseMirror state update
+    document.execCommand('selectAll', false, null);
+    document.execCommand('insertText', false, message);
+    inputBox.dispatchEvent(new Event('input', { bubbles: true }));
+  }
 
   // Wait a bit for UI to update state
   setTimeout(() => {
+    // Snapshot current response to avoid detecting stale responses
+    lastResponseText = getLatestResponse() || '';
+
     const clickSend = () => {
       let sendButton = document.querySelector(SELECTORS.sendButton) ||
         document.querySelector(SELECTORS.sendButtonAlt) ||
@@ -85,8 +94,6 @@ function sendMessage(message) {
     };
 
     clickSend();
-    // Double check logic: sometimes first click focuses, second sends?
-    // Or if it failed, try again shortly.
   }, 1000);
 
   return true;
@@ -162,6 +169,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     participantInfo.currentTurn = message.currentTurn;
     participantInfo.maxTurns = message.maxTurns;
     updateIndicator();
+    sendResponse({ success: true });
   }
   return true;
 });
