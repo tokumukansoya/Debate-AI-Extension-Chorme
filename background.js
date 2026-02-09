@@ -1,273 +1,291 @@
 // Background service worker for coordinating the debate
 let debateState = {
   isActive: false,
-  currentTurn: 0,
-  maxTurns: 5,
+  isWaitingForFirstInput: false,
+  turnsP1: 0,
+  turnsP2: 0,
+  maxRounds: 5, // User setting (e.g. 5 rounds)
   topic: '',
   delay: 3000,
-  ai1: 'chatgpt', // Type of first AI: 'chatgpt' or 'gemini'
-  ai2: 'gemini', // Type of second AI: 'chatgpt' or 'gemini'
-  currentSpeaker: 'ai1', // 'ai1' or 'ai2'
+  ai1: 'chatgpt',
+  ai2: 'gemini',
+  currentSpeaker: 'ai1',
+  lastSpeaker: null, // 'ai1' or 'ai2'
   participant1TabId: null,
   participant2TabId: null,
   lastResponse: ''
 };
 
-// Find AI tabs
-async function findAITabs(ai1Type, ai2Type) {
-  const tabs = await chrome.tabs.query({});
-  let chatgptTabs = [];
-  let geminiTabs = [];
+// Helper to get printable name
+function getAIName(type) {
+  switch (type) {
+    case 'chatgpt': return 'ChatGPT';
+    case 'gemini': return 'Gemini';
+    case 'claude': return 'Claude';
+    case 'grok': return 'Grok';
+    default: return type;
+  }
+}
+
+// Find AI tabs and auto-assign
+async function findAITabs() {
+  const tabs = await chrome.tabs.query({ currentWindow: true });
+  let supportedTabs = [];
 
   for (const tab of tabs) {
     try {
       const url = new URL(tab.url);
-      const hostname = url.hostname;
-      
-      if (hostname === 'chat.openai.com' || hostname === 'chatgpt.com' || hostname === 'www.chatgpt.com') {
-        chatgptTabs.push(tab);
-      } else if (hostname === 'gemini.google.com' || hostname === 'www.gemini.google.com') {
-        geminiTabs.push(tab);
+      const host = url.hostname;
+      let type = null;
+
+      if (host.includes('chatgpt') || host === 'chat.openai.com') type = 'chatgpt';
+      else if (host.includes('gemini.google')) type = 'gemini';
+      else if (host.includes('claude.ai')) type = 'claude';
+      else if (host === 'x.com' || host === 'twitter.com') type = 'grok';
+
+      if (type) {
+        supportedTabs.push({ tab, type });
       }
-    } catch (e) {
-      // Invalid URL, skip
-      continue;
-    }
+    } catch (e) { continue; }
   }
 
-  let participant1Tab = null;
-  let participant2Tab = null;
+  // Sort by tab index (left to right)
+  supportedTabs.sort((a, b) => a.tab.index - b.tab.index);
 
-  // If both are the same AI type, we need two tabs of that type
-  if (ai1Type === ai2Type) {
-    const tabs = ai1Type === 'chatgpt' ? chatgptTabs : geminiTabs;
-    if (tabs.length >= 2) {
-      participant1Tab = tabs[0];
-      participant2Tab = tabs[1];
-    }
-  } else {
-    // Different AI types - assign from their respective arrays
-    participant1Tab = ai1Type === 'chatgpt' ? chatgptTabs[0] : geminiTabs[0];
-    participant2Tab = ai2Type === 'chatgpt' ? chatgptTabs[0] : geminiTabs[0];
+  let participant1 = null;
+  let participant2 = null;
+
+  if (supportedTabs.length >= 2) {
+    participant1 = supportedTabs[0];
+    participant2 = supportedTabs[1];
   }
 
-  return { participant1Tab, participant2Tab, chatgptTabs, geminiTabs };
+  return { participant1, participant2, allTabs: supportedTabs };
 }
 
-// Send log to popup
 function sendLog(message) {
-  chrome.runtime.sendMessage({ type: 'log', message }).catch(() => {});
+  chrome.runtime.sendMessage({ type: 'log', message }).catch(() => { });
 }
 
-// Start the debate
 async function startDebate(config) {
+  // If topic is empty, we are entering "Monitoring Mode" waiting for manual input
+  const isMonitoringMode = !config.topic;
+
+  // config.maxTurns comes from popup "Turn Limit" which we now interpret as ROUNDS
   debateState = {
     ...config,
+    maxRounds: config.maxTurns || 5, // Interpret as Rounds
     isActive: true,
-    currentTurn: 0,
+    isWaitingForFirstInput: isMonitoringMode,
+    turnsP1: 0,
+    turnsP2: 0,
     currentSpeaker: 'ai1',
+    lastSpeaker: null,
     lastResponse: ''
   };
 
-  const { participant1Tab, participant2Tab, chatgptTabs, geminiTabs } = await findAITabs(config.ai1, config.ai2);
+  const { participant1, participant2 } = await findAITabs();
 
-  const ai1Name = config.ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
-  const ai2Name = config.ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
-
-  if (!participant1Tab || !participant2Tab) {
-    let errorMsg = '';
-    let detailedError = '';
-    
-    if (config.ai1 === config.ai2) {
-      // Same AI type - need two tabs
-      const aiName = ai1Name;
-      const availableCount = config.ai1 === 'chatgpt' ? chatgptTabs.length : geminiTabs.length;
-      
-      if (availableCount === 0) {
-        errorMsg = `❌ ${aiName}のタブが見つかりません`;
-        detailedError = `必要な条件:\n• ${aiName}のタブを2つ開いてください\n• 各タブでログインしていることを確認してください\n• タブを開いた後、拡張機能アイコンをクリックしてください`;
-      } else if (availableCount === 1) {
-        errorMsg = `❌ ${aiName}のタブが1つしか開かれていません`;
-        detailedError = `必要な条件:\n• ${aiName}のタブをもう1つ開いてください（合計2つ必要）\n• 両方のタブでログインしていることを確認してください`;
-      }
-    } else {
-      // Different AI types
-      const missingAIs = [];
-      if (!participant1Tab) missingAIs.push(ai1Name);
-      if (!participant2Tab) missingAIs.push(ai2Name);
-      
-      errorMsg = `❌ 必要なAIタブが開かれていません: ${missingAIs.join(', ')}`;
-      detailedError = `必要な条件:\n`;
-      if (chatgptTabs.length === 0 && (config.ai1 === 'chatgpt' || config.ai2 === 'chatgpt')) {
-        detailedError += `• ChatGPTのタブを開いてください (chat.openai.com または chatgpt.com)\n`;
-      }
-      if (geminiTabs.length === 0 && (config.ai1 === 'gemini' || config.ai2 === 'gemini')) {
-        detailedError += `• Geminiのタブを開いてください (gemini.google.com)\n`;
-      }
-      detailedError += `• 各タブでログインしていることを確認してください\n• タブを開いた後、拡張機能アイコンをクリックしてください`;
-    }
-    
+  if (!participant1 || !participant2) {
+    let errorMsg = `❌ AIタブが2つ以上見つかりません。`;
+    let detailedError = `左から順に2つのAIタブが参加者として自動割り当てられます。`;
     sendLog(errorMsg);
     sendLog(detailedError);
-    chrome.runtime.sendMessage({ 
-      type: 'debateError', 
-      error: errorMsg,
-      details: detailedError
-    }).catch(() => {});
+    chrome.runtime.sendMessage({ type: 'debateError', error: errorMsg, details: detailedError }).catch(() => { });
     debateState.isActive = false;
     return;
   }
 
-  debateState.participant1TabId = participant1Tab.id;
-  debateState.participant2TabId = participant2Tab.id;
+  debateState.participant1TabId = participant1.tab.id;
+  debateState.participant2TabId = participant2.tab.id;
+  debateState.ai1 = participant1.type;
+  debateState.ai2 = participant2.type;
 
-  // Send participant info to tabs for better identification
-  chrome.tabs.sendMessage(participant1Tab.id, {
+  // Send info to tabs
+  // Initialize indicators (0/5)
+  const sendInitObj = (pNum, type) => ({
     action: 'setParticipantInfo',
-    participant: 1,
-    aiType: debateState.ai1
-  }).catch(() => {});
-  
-  chrome.tabs.sendMessage(participant2Tab.id, {
-    action: 'setParticipantInfo',
-    participant: 2,
-    aiType: debateState.ai2
-  }).catch(() => {});
+    participant: pNum,
+    aiType: type,
+    maxTurns: debateState.maxRounds
+  });
 
-  // Start with AI 1 if there's a topic
-  if (config.topic) {
-    sendLog(`💬 トピックを${ai1Name}（参加者1）に送信中...`);
+  chrome.tabs.sendMessage(debateState.participant1TabId, sendInitObj(1, debateState.ai1)).catch(() => { });
+  chrome.tabs.sendMessage(debateState.participant2TabId, sendInitObj(2, debateState.ai2)).catch(() => { });
+
+  if (!isMonitoringMode) {
+    // Standard start with topic
+    sendLog(`🚀 ディベート開始: ${getAIName(debateState.ai1)} (P1) vs ${getAIName(debateState.ai2)} (P2)`);
+    sendLog(`ℹ️ 設定: ${debateState.maxRounds}ラウンド (各${debateState.maxRounds}回)`);
+    sendLog(`💬 トピックを${getAIName(debateState.ai1)}に送信中...`);
     try {
-      const response = await chrome.tabs.sendMessage(participant1Tab.id, {
-        action: 'sendMessage',
-        message: config.topic
-      });
-      
-      if (!response || !response.success) {
-        throw new Error('メッセージの送信に失敗しました');
-      }
-      debateState.currentSpeaker = 'ai2'; // Next will be AI 2
+      await chrome.tabs.sendMessage(debateState.participant1TabId, { action: 'sendMessage', message: config.topic });
+      debateState.currentSpeaker = 'ai2';
     } catch (error) {
-      sendLog(`❌ メッセージ送信エラー: ${error.message}`);
-      sendLog(`必要な条件:\n• ${ai1Name}ページが完全に読み込まれていることを確認してください\n• ${ai1Name}にログインしていることを確認してください\n• ページを更新してから再試行してください`);
-      chrome.runtime.sendMessage({ 
-        type: 'debateError', 
-        error: 'メッセージの送信に失敗しました',
-        details: `• ${ai1Name}ページが完全に読み込まれていることを確認してください\n• ${ai1Name}にログインしていることを確認してください\n• ページを更新してから再試行してください`
-      }).catch(() => {});
+      sendLog(`❌ 送信エラー: ${error.message}`);
       debateState.isActive = false;
-      return;
     }
   } else {
-    sendLog('⚠️ トピックが指定されていません。手動で会話を開始してください。');
+    // Monitoring mode
+    sendLog(`ℹ️ 設定: ${debateState.maxRounds}ラウンド (各${debateState.maxRounds}回)`);
+    sendLog(`👀 待機中: 左側のタブ (${getAIName(debateState.ai1)}) にトピックを入力してください...`);
   }
 }
 
-// Stop the debate
 function stopDebate() {
   debateState.isActive = false;
+  debateState.isWaitingForFirstInput = false;
   sendLog('Debate stopped');
 }
 
-// Handle response from AI
+async function continueDebate() {
+  if (!debateState.participant1TabId || !debateState.participant2TabId) {
+    sendLog('❌ 再開できません: タブ情報が失われました');
+    return;
+  }
+
+  if (!debateState.lastResponse) {
+    sendLog('❌ 再開できません: 前回の応答が見つかりません');
+    return;
+  }
+
+  // Add 1 Round
+  debateState.maxRounds += 1;
+  debateState.isActive = true;
+
+  sendLog(`🔄 ディベートを再開 (+1ラウンド / 合計${debateState.maxRounds}ラウンド)`);
+
+  // Update indicators now with new max
+  const updateMsgP1 = {
+    action: 'updateTurn',
+    currentTurn: debateState.turnsP1,
+    maxTurns: debateState.maxRounds
+  };
+  const updateMsgP2 = {
+    action: 'updateTurn',
+    currentTurn: debateState.turnsP2,
+    maxTurns: debateState.maxRounds
+  };
+  chrome.tabs.sendMessage(debateState.participant1TabId, updateMsgP1).catch(() => { });
+  chrome.tabs.sendMessage(debateState.participant2TabId, updateMsgP2).catch(() => { });
+
+  // Who spoke last?
+  const lastSpeaker = debateState.lastSpeaker; // 'ai1' or 'ai2'
+
+  // Send lastResponse to the OTHER person to trigger their turn
+  const targetIsP1 = (lastSpeaker === 'ai2'); // If ai2 spoke last, send to ai1 (P1)
+
+  const targetTabId = targetIsP1 ? debateState.participant1TabId : debateState.participant2TabId;
+  const targetName = targetIsP1 ? getAIName(debateState.ai1) : getAIName(debateState.ai2);
+  const targetPNum = targetIsP1 ? '1' : '2';
+
+  sendLog(`➡️ ${targetName}（参加者${targetPNum}）に再送信中...`);
+
+  try {
+    await chrome.tabs.sendMessage(targetTabId, { action: 'sendMessage', message: debateState.lastResponse });
+  } catch (e) {
+    sendLog(`❌ 送信エラー (${targetName}): ${e.message}`);
+    debateState.isActive = false;
+  }
+}
+
+async function handleManualStart(senderTab, aiType) {
+  // Only proceed if we are active AND waiting for first input
+  if (!debateState.isActive || !debateState.isWaitingForFirstInput) {
+    return;
+  }
+
+  if (senderTab.id !== debateState.participant1TabId) {
+    return;
+  }
+
+  debateState.isWaitingForFirstInput = false;
+  sendLog(`🚀 手動開始検知: ${getAIName(debateState.ai1)} が入力しました。`);
+}
+
 async function handleAIResponse(tabId, response) {
-  if (!debateState.isActive) {
-    console.log('Debate not active, ignoring response from tab', tabId);
-    return;
+  if (!debateState.isActive) return;
+  if (debateState.isWaitingForFirstInput && tabId === debateState.participant1TabId) {
+    debateState.isWaitingForFirstInput = false;
   }
 
-  const isFromParticipant1 = tabId === debateState.participant1TabId;
-  const isFromParticipant2 = tabId === debateState.participant2TabId;
+  const isP1 = tabId === debateState.participant1TabId;
+  const isP2 = tabId === debateState.participant2TabId;
+  if (!isP1 && !isP2) return;
 
-  if (!isFromParticipant1 && !isFromParticipant2) {
-    console.log('Response from unknown tab', tabId);
-    return;
-  }
+  const speakerName = isP1 ? getAIName(debateState.ai1) : getAIName(debateState.ai2);
+  const pNum = isP1 ? '1' : '2';
 
-  // Determine AI names for logging
-  const speakerType = isFromParticipant1 ? debateState.ai1 : debateState.ai2;
-  const participantNum = isFromParticipant1 ? '1' : '2';
-  const speaker = speakerType === 'chatgpt' ? 'ChatGPT' : 'Gemini';
-  
-  // Log the response
-  sendLog(`📝 ${speaker} (参加者${participantNum}) が回答しました`);
-  console.log(`Response from Participant ${participantNum} (${speaker}):`, response.substring(0, 100) + '...');
+  // Update last speaker
+  debateState.lastSpeaker = isP1 ? 'ai1' : 'ai2';
+
+  sendLog(`📝 ${speakerName} (参加者${pNum}) が回答しました`);
 
   debateState.lastResponse = response;
-  debateState.currentTurn++;
 
-  // Check if debate should end
-  if (debateState.currentTurn >= debateState.maxTurns) {
+  // Independent Counter Update
+  if (isP1) {
+    debateState.turnsP1++;
+    // Notify P1 with its new count
+    chrome.tabs.sendMessage(debateState.participant1TabId, {
+      action: 'updateTurn',
+      currentTurn: debateState.turnsP1,
+      maxTurns: debateState.maxRounds
+    }).catch(() => { });
+  } else {
+    debateState.turnsP2++;
+    // Notify P2 with its new count
+    chrome.tabs.sendMessage(debateState.participant2TabId, {
+      action: 'updateTurn',
+      currentTurn: debateState.turnsP2,
+      maxTurns: debateState.maxRounds
+    }).catch(() => { });
+  }
+
+  // Check termination: BOTH must reach maxRounds
+  if (debateState.turnsP1 >= debateState.maxRounds && debateState.turnsP2 >= debateState.maxRounds) {
     debateState.isActive = false;
     sendLog('✅ Debate completed');
-    chrome.runtime.sendMessage({ 
-      type: 'debateEnded', 
-      turns: debateState.currentTurn 
-    }).catch(() => {});
+    // Send total turns as sum or rounds? Sending rounds for clarity in log maybe? 
+    // Popup expects 'turns', let's send maxRounds
+    chrome.runtime.sendMessage({ type: 'debateEnded', turns: debateState.maxRounds }).catch(() => { });
     return;
   }
 
-  // Wait before sending to the other AI
+  // Send to other AI
   setTimeout(async () => {
-    if (!debateState.isActive) {
-      console.log('Debate ended before sending response');
-      return;
-    }
+    if (!debateState.isActive) return;
+
+    // Logic: P1 just finished -> Send to P2. P2 just finished -> Send to P1.
+
+    // Are we done? (Wait, I checked termination above). 
+    // However, if P1 reached max but P2 hasn't, we still continue to P2.
+    // If P2 reached max but P1 hasn't... (Less likely in alternating debate, but possible if manual interference).
+
+    // Normal case: P1 (1/5) -> P2 (0/5). Send to P2.
+    // P2 (1/5). End loop? No, max is 5.
+
+    const targetTabId = isP1 ? debateState.participant2TabId : debateState.participant1TabId;
+    const targetName = isP1 ? getAIName(debateState.ai2) : getAIName(debateState.ai1);
+    const targetPNum = isP1 ? '2' : '1';
+
+    // Optimization: If target has already reached max rounds, should we stop?
+    // If P1 (5/5) sends to P2 (4/5). P2 will respond -> (5/5). Then stop. Correct.
+    // If P1 (5/5) sends to P2 (5/5). Should not happen because check above would catch it immediately after P2's turn.
+    // Wait, after P2 (5/5), check above catches it turned off isActive. So we won't be here.
+    // What if P1 (5/5) finished, but P2 is (4/5)? We proceed.
+
+    sendLog(`➡️ ${targetName}（参加者${targetPNum}）に送信中...`);
 
     try {
-      if (isFromParticipant1) {
-        // Send to Participant 2
-        const ai2Name = debateState.ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
-        sendLog(`➡️ ${ai2Name}（参加者2）に送信中...`);
-        console.log(`Sending from Participant 1 to Participant 2 (tab ${debateState.participant2TabId})`);
-        
-        const sendResult = await chrome.tabs.sendMessage(debateState.participant2TabId, {
-          action: 'sendMessage',
-          message: response
-        });
-        
-        if (!sendResult || !sendResult.success) {
-          throw new Error('メッセージの送信に失敗しました');
-        }
-        console.log('Successfully sent to Participant 2');
-        debateState.currentSpeaker = 'ai2';
-      } else {
-        // Send to Participant 1
-        const ai1Name = debateState.ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
-        sendLog(`➡️ ${ai1Name}（参加者1）に送信中...`);
-        console.log(`Sending from Participant 2 to Participant 1 (tab ${debateState.participant1TabId})`);
-        
-        const sendResult = await chrome.tabs.sendMessage(debateState.participant1TabId, {
-          action: 'sendMessage',
-          message: response
-        });
-        
-        if (!sendResult || !sendResult.success) {
-          throw new Error('メッセージの送信に失敗しました');
-        }
-        console.log('Successfully sent to Participant 1');
-        debateState.currentSpeaker = 'ai1';
-      }
-    } catch (error) {
-      const targetAI = isFromParticipant1 ? 
-        (debateState.ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini') :
-        (debateState.ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini');
-      
-      console.error(`Error sending to ${targetAI}:`, error);
-      sendLog(`❌ ${targetAI}へのメッセージ送信エラー: ${error.message}`);
-      sendLog(`必要な条件:\n• ${targetAI}ページが開いていることを確認してください\n• ${targetAI}にログインしていることを確認してください\n• ページを更新してから再試行してください`);
-      
+      await chrome.tabs.sendMessage(targetTabId, { action: 'sendMessage', message: response });
+    } catch (e) {
+      sendLog(`❌ 送信エラー (${targetName}): ${e.message}`);
       debateState.isActive = false;
-      chrome.runtime.sendMessage({ 
-        type: 'debateError', 
-        error: `${targetAI}へのメッセージ送信に失敗しました`,
-        details: `• ${targetAI}ページが開いていることを確認してください\n• ${targetAI}にログインしていることを確認してください\n• ページを更新してから再試行してください`
-      }).catch(() => {});
     }
   }, debateState.delay);
 }
 
-// Message listener
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'startDebate') {
     startDebate(message.config);
@@ -275,13 +293,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.action === 'stopDebate') {
     stopDebate();
     sendResponse({ success: true });
+  } else if (message.action === 'continueDebate') {
+    continueDebate();
+    sendResponse({ success: true });
   } else if (message.action === 'getStatus') {
-    sendResponse(debateState);
+    // Augment status with unified 'currentTurn' for popup if needed, or just send raw stuff
+    // Popup uses currentTurn to decide if continue button shows? 
+    // Popup check: response.currentTurn >= response.maxTurns.
+    // Use max of p1/p2?
+    const effectiveCurrent = Math.min(debateState.turnsP1, debateState.turnsP2);
+    // Actually, completion is when BOTH >= max.
+    // Let's modify popup logic or send a synthetic 'currentTurn' that looks like rounds.
+    // Let's send effectiveCurrent = turnsP2 (usually the lagger).
+    sendResponse({
+      ...debateState,
+      currentTurn: debateState.turnsP2,
+      maxTurns: debateState.maxRounds
+    });
   } else if (message.action === 'aiResponded') {
     handleAIResponse(sender.tab.id, message.response);
     sendResponse({ success: true });
+  } else if (message.action === 'manualStart') {
+    handleManualStart(sender.tab, message.aiType);
+    sendResponse({ success: true });
   } else if (message.action === 'log') {
-    // Forward log messages from content scripts to popup
     sendLog(message.message);
     sendResponse({ success: true });
   }

@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AIディベートコントロール</title>
   <link rel="stylesheet" href="popup.css">
 </head>
+
 <body>
   <div class="container">
-    <h1>🤖 AIディベート</h1>
-    
+    <h1>AIディベート</h1>
+
     <div class="status-section">
       <div class="status-indicator" id="statusIndicator">
         <span class="status-dot"></span>
@@ -19,21 +21,11 @@
 
     <div class="settings-section">
       <h3>設定</h3>
-      
-      <div class="setting-item">
-        <label for="ai1Select">AI参加者1:</label>
-        <select id="ai1Select">
-          <option value="chatgpt">ChatGPT</option>
-          <option value="gemini">Gemini</option>
-        </select>
-      </div>
 
       <div class="setting-item">
-        <label for="ai2Select">AI参加者2:</label>
-        <select id="ai2Select">
-          <option value="gemini">Gemini</option>
-          <option value="chatgpt">ChatGPT</option>
-        </select>
+        <p style="font-size: 13px; color: #aaa; margin: 0;">
+          参加者は自動的に割り当てられます（左端のタブが参加者1）。
+        </p>
       </div>
 
       <div class="setting-item">
@@ -64,6 +56,8 @@
 
     <div class="control-section">
       <button id="startBtn" class="btn btn-start">ディベート開始</button>
+      <button id="continueBtn" class="btn btn-continue" style="display:none; background-color: #2196F3;">続けて再開
+        (+1ラウンド)</button>
       <button id="stopBtn" class="btn btn-stop" disabled>ディベート停止</button>
     </div>
 
@@ -74,4 +68,5 @@
   </div>
   <script src="popup.js"></script>
 </body>
+
 </html>

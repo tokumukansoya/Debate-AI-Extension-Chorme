@@ -4,30 +4,26 @@ let debateState = {
   currentTurn: 0,
   maxTurns: 5,
   topic: '',
-  delay: 3000,
-  ai1: 'chatgpt',
-  ai2: 'gemini'
+  delay: 3000
 };
 
 // DOM elements
 const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
+const continueBtn = document.getElementById('continueBtn');
 const statusIndicator = document.getElementById('statusIndicator');
 const statusText = document.getElementById('statusText');
 const activityLog = document.getElementById('activityLog');
 const debateTopicInput = document.getElementById('debateTopic');
 const turnLimitInput = document.getElementById('turnLimit');
 const delaySecondsInput = document.getElementById('delaySeconds');
-const ai1Select = document.getElementById('ai1Select');
-const ai2Select = document.getElementById('ai2Select');
+// Selectors removed from DOM, references removed
 
 // Load saved settings
-chrome.storage.local.get(['debateTopic', 'turnLimit', 'delaySeconds', 'ai1', 'ai2'], (result) => {
+chrome.storage.local.get(['debateTopic', 'turnLimit', 'delaySeconds'], (result) => {
   if (result.debateTopic) debateTopicInput.value = result.debateTopic;
   if (result.turnLimit) turnLimitInput.value = result.turnLimit;
   if (result.delaySeconds) delaySecondsInput.value = result.delaySeconds;
-  if (result.ai1) ai1Select.value = result.ai1;
-  if (result.ai2) ai2Select.value = result.ai2;
 });
 
 // Save settings on change
@@ -43,14 +39,6 @@ delaySecondsInput.addEventListener('change', () => {
   chrome.storage.local.set({ delaySeconds: delaySecondsInput.value });
 });
 
-ai1Select.addEventListener('change', () => {
-  chrome.storage.local.set({ ai1: ai1Select.value });
-});
-
-ai2Select.addEventListener('change', () => {
-  chrome.storage.local.set({ ai2: ai2Select.value });
-});
-
 // Add log entry
 function addLog(message) {
   const entry = document.createElement('div');
@@ -58,7 +46,7 @@ function addLog(message) {
   const time = new Date().toLocaleTimeString();
   entry.innerHTML = `<span class="log-time">${time}</span>${message}`;
   activityLog.insertBefore(entry, activityLog.firstChild);
-  
+
   // Keep only last 20 entries
   while (activityLog.children.length > 20) {
     activityLog.removeChild(activityLog.lastChild);
@@ -77,8 +65,6 @@ startBtn.addEventListener('click', async () => {
   const topic = debateTopicInput.value.trim();
   const turnLimit = parseInt(turnLimitInput.value) || 5;
   const delaySeconds = parseInt(delaySecondsInput.value) || 3;
-  const ai1 = ai1Select.value;
-  const ai2 = ai2Select.value;
 
   // Validation
   if (turnLimit < 1 || turnLimit > 20) {
@@ -97,8 +83,8 @@ startBtn.addEventListener('click', async () => {
     maxTurns: turnLimit,
     topic: topic,
     delay: delaySeconds * 1000,
-    ai1: ai1,
-    ai2: ai2
+    ai1: null,
+    ai2: null
   };
 
   // Send message to background script
@@ -109,25 +95,50 @@ startBtn.addEventListener('click', async () => {
 
   startBtn.disabled = true;
   stopBtn.disabled = false;
-  updateStatus('active', 'ディベート中');
-  const ai1Name = ai1 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
-  const ai2Name = ai2 === 'chatgpt' ? 'ChatGPT' : 'Gemini';
-  addLog(`🚀 ディベート開始: ${ai1Name} vs ${ai2Name}${topic ? ` - "${topic}"` : ''}`);
-  
-  if (!topic) {
-    addLog('ℹ️ トピックが指定されていないため、手動で会話を開始してください');
+  continueBtn.style.display = 'none';
+
+  const getAIName = (type) => {
+    switch (type) {
+      case 'chatgpt': return 'ChatGPT';
+      case 'gemini': return 'Gemini';
+      case 'claude': return 'Claude';
+      case 'grok': return 'Grok';
+      default: return type;
+    }
+  };
+
+  if (topic) {
+    updateStatus('active', 'ディベート中');
+    addLog(`🚀 ディベート開始をリクエスト: トピック "${topic}"`);
+  } else {
+    updateStatus('active', '手動入力待機中');
+    addLog(`👀 待機モード開始: 左側のAIタブでトピックを入力してください`);
   }
 });
 
 // Stop debate
 stopBtn.addEventListener('click', () => {
   chrome.runtime.sendMessage({ action: 'stopDebate' });
-  
+
   debateState.isActive = false;
   startBtn.disabled = false;
   stopBtn.disabled = true;
+  continueBtn.style.display = 'none';
   updateStatus('stopped', '停止');
   addLog('🛑 ユーザーによりディベート停止');
+});
+
+// Continue debate
+continueBtn.addEventListener('click', () => {
+  chrome.runtime.sendMessage({ action: 'continueDebate' });
+
+  debateState.isActive = true;
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
+  continueBtn.style.display = 'none';
+
+  updateStatus('active', 'ディベート再開中');
+  addLog('🔄 ディベートを再開します');
 });
 
 // Listen for messages from background script
@@ -138,12 +149,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     debateState.isActive = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
+    continueBtn.style.display = 'inline-block';
     updateStatus('stopped', 'ディベート終了');
     addLog('✅ ディベート完了 (' + message.turns + ' ターン)');
   } else if (message.type === 'debateError') {
     debateState.isActive = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
+    continueBtn.style.display = 'none';
     updateStatus('stopped', 'エラー');
     addLog('❌ エラー: ' + message.error);
     if (message.details) {
@@ -154,10 +167,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Check current debate status
 chrome.runtime.sendMessage({ action: 'getStatus' }, (response) => {
-  if (response && response.isActive) {
+  if (response) {
     debateState = response;
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-    updateStatus('active', 'ディベート中');
+    if (response.isActive) {
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+      continueBtn.style.display = 'none';
+      if (response.isWaitingForFirstInput) {
+        updateStatus('active', '手動入力待機中');
+      } else {
+        updateStatus('active', 'ディベート中');
+      }
+    } else {
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      if (response.currentTurn > 0 && response.currentTurn >= response.maxTurns) {
+        continueBtn.style.display = 'inline-block';
+      } else {
+        continueBtn.style.display = 'none';
+      }
+    }
   }
 });

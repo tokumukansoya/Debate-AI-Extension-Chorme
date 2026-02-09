@@ -4,7 +4,9 @@ console.log('AI Debate Extension: ChatGPT content script loaded');
 // Participant info
 let participantInfo = {
   participant: 0,
-  aiType: 'chatgpt'
+  aiType: 'chatgpt',
+  currentTurn: 0,
+  maxTurns: 5
 };
 
 // Selectors for ChatGPT interface
@@ -31,48 +33,61 @@ function getLatestResponse() {
 // Send message to ChatGPT
 function sendMessage(message) {
   console.log('ChatGPT: Attempting to send message:', message.substring(0, 50) + '...');
-  
-  // Find input box
-  const inputBox = document.querySelector(SELECTORS.inputBox) || 
-                   document.querySelector(SELECTORS.inputBoxAlt);
-  
+
+  // Try multiple selector strategies
+  const inputBox = document.querySelector(SELECTORS.inputBox) ||
+    document.querySelector(SELECTORS.inputBoxAlt) ||
+    document.querySelector('#prompt-textarea');
+
   if (!inputBox) {
     console.error('ChatGPT input box not found');
     chrome.runtime.sendMessage({
       action: 'log',
-      message: '❌ ChatGPTの入力ボックスが見つかりません\n必要な条件:\n• ChatGPTにログインしていることを確認してください\n• 新しい会話を開始していることを確認してください\n• ページを更新してから再試行してください'
-    }).catch(() => {});
+      message: '❌ ChatGPTの入力ボックスが見つかりません'
+    }).catch(() => { });
     return false;
   }
 
   // Set the message
-  inputBox.value = message;
-  inputBox.dispatchEvent(new Event('input', { bubbles: true }));
-  
-  // Focus the input
+  // For ContentEditable div/p or Textarea
   inputBox.focus();
+  inputBox.value = message;
+  inputBox.innerHTML = `<p>${message}</p>`; // Fallback for contenteditable
 
-  // Wait a bit for UI to update
+  // Dispatch events to trigger React/Framework listeners
+  inputBox.dispatchEvent(new Event('input', { bubbles: true }));
+  inputBox.dispatchEvent(new Event('change', { bubbles: true }));
+
+  // Wait a bit for UI to update state
   setTimeout(() => {
-    // Find and click send button
-    const sendButton = document.querySelector(SELECTORS.sendButton) || 
-                       document.querySelector(SELECTORS.sendButtonAlt);
-    
-    if (sendButton && !sendButton.disabled) {
-      sendButton.click();
-      console.log('Message sent to ChatGPT successfully');
-      
-      // Wait for response
-      waitForResponse();
-    } else {
-      console.error('ChatGPT send button not found or disabled');
-      chrome.runtime.sendMessage({
-        action: 'log',
-        message: '❌ ChatGPTの送信ボタンが見つからないか、無効になっています\n必要な条件:\n• メッセージが入力されていることを確認してください\n• ChatGPTが応答中でないことを確認してください\n• ページを更新してから再試行してください'
-      }).catch(() => {});
-      return false;
-    }
-  }, 500);
+    const clickSend = () => {
+      let sendButton = document.querySelector(SELECTORS.sendButton) ||
+        document.querySelector(SELECTORS.sendButtonAlt) ||
+        document.querySelector('button[data-testid="send-button"]');
+
+      if (sendButton && !sendButton.disabled) {
+        sendButton.click();
+        console.log('Message sent to ChatGPT successfully');
+        waitForResponse();
+      } else {
+        // Fallback: Try Enter key
+        console.log('Send button not ready, trying Enter key...');
+        const enterEvent = new KeyboardEvent('keydown', {
+          bubbles: true, cancelable: true, keyCode: 13, key: 'Enter'
+        });
+        inputBox.dispatchEvent(enterEvent);
+
+        // Re-check after a brief delay if we need to retry or if it worked
+        setTimeout(() => {
+          waitForResponse();
+        }, 1000);
+      }
+    };
+
+    clickSend();
+    // Double check logic: sometimes first click focuses, second sends?
+    // Or if it failed, try again shortly.
+  }, 1000);
 
   return true;
 }
@@ -95,23 +110,23 @@ function waitForResponse() {
 
     // Check for loading/generating indicator
     const isGenerating = document.querySelector('[data-testid="stop-button"]') !== null;
-    
+
     if (!isGenerating && checkCount > 3) {
       // Response complete, get the text
       const response = getLatestResponse();
-      
+
       if (response && response !== lastResponseText && response.length > 10) {
         lastResponseText = response;
         clearInterval(responseCheckInterval);
-        
+
         console.log('ChatGPT response captured, length:', response.length);
-        
+
         // Send to background script
         chrome.runtime.sendMessage({
           action: 'aiResponded',
           response: response
         });
-        
+
         console.log('ChatGPT response sent to background script');
       }
     }
@@ -122,7 +137,7 @@ function waitForResponse() {
       chrome.runtime.sendMessage({
         action: 'log',
         message: '⚠️ ChatGPTの応答がタイムアウトしました\n考えられる原因:\n• 応答が非常に長い可能性があります\n• ChatGPTがエラーを返した可能性があります\n• ネットワークの問題がある可能性があります\n対処方法:\n• 遅延設定を増やしてください\n• ページを更新してから再試行してください'
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }, 1000);
 }
@@ -130,17 +145,23 @@ function waitForResponse() {
 // Listen for messages from background script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('ChatGPT: Received message:', message.action);
-  
+
   if (message.action === 'sendMessage') {
     const success = sendMessage(message.message);
     sendResponse({ success });
   } else if (message.action === 'setParticipantInfo') {
     participantInfo = {
       participant: message.participant,
-      aiType: message.aiType
+      aiType: message.aiType,
+      currentTurn: 0,
+      maxTurns: message.maxTurns || 5
     };
     updateIndicator();
     sendResponse({ success: true });
+  } else if (message.action === 'updateTurn') {
+    participantInfo.currentTurn = message.currentTurn;
+    participantInfo.maxTurns = message.maxTurns;
+    updateIndicator();
   }
   return true;
 });
@@ -152,7 +173,7 @@ function addIndicator() {
 
 function updateIndicator() {
   let indicator = document.getElementById('ai-debate-indicator');
-  
+
   if (!indicator) {
     indicator = document.createElement('div');
     indicator.id = 'ai-debate-indicator';
@@ -160,142 +181,61 @@ function updateIndicator() {
       position: fixed;
       top: 10px;
       right: 10px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #333;
       color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 8px 12px;
+      border-radius: 6px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 500;
       z-index: 999999;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 2px;
     `;
+
     document.body.appendChild(indicator);
   }
-  
-  let participantText = '';
+
+  let participantText = '待機中...';
   if (participantInfo.participant > 0) {
-    participantText = `<div style="font-size: 11px; opacity: 0.9;">参加者${participantInfo.participant} (${participantInfo.aiType === 'chatgpt' ? 'ChatGPT' : 'Gemini'})</div>`;
+    participantText = `参加者${participantInfo.participant} (${participantInfo.currentTurn}/${participantInfo.maxTurns})`;
   }
-  
+
   indicator.innerHTML = `
-    <div>🤖 AIディベート実行中</div>
-    ${participantText}
+    <div>${participantText}</div>
   `;
-}
-
-// Add settings button
-function addSettingsButton() {
-  if (document.getElementById('ai-debate-settings-btn')) return;
-  
-  const settingsBtn = document.createElement('button');
-  settingsBtn.id = 'ai-debate-settings-btn';
-  settingsBtn.style.cssText = `
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 999998;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-  `;
-  settingsBtn.innerHTML = '⚙️';
-  settingsBtn.title = 'AIディベート設定';
-  
-  settingsBtn.addEventListener('mouseenter', () => {
-    settingsBtn.style.transform = 'scale(1.1)';
-    settingsBtn.style.boxShadow = '0 6px 16px rgba(0,0,0,0.4)';
-  });
-  
-  settingsBtn.addEventListener('mouseleave', () => {
-    settingsBtn.style.transform = 'scale(1)';
-    settingsBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
-  });
-  
-  settingsBtn.addEventListener('click', () => {
-    // Open the extension popup by sending a message to background
-    chrome.runtime.sendMessage({ action: 'openPopup' }).catch(() => {
-      // Fallback: show a modal with instructions
-      showSettingsModal();
-    });
-  });
-  
-  document.body.appendChild(settingsBtn);
-}
-
-function showSettingsModal() {
-  if (document.getElementById('ai-debate-settings-modal')) return;
-  
-  const modal = document.createElement('div');
-  modal.id = 'ai-debate-settings-modal';
-  modal.style.cssText = `
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    color: black;
-    padding: 24px;
-    border-radius: 12px;
-    z-index: 9999999;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    max-width: 400px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
-  `;
-  
-  modal.innerHTML = `
-    <h2 style="margin: 0 0 16px 0; font-size: 20px;">AIディベート設定</h2>
-    <p style="margin: 0 0 16px 0; line-height: 1.6;">
-      設定にアクセスするには、ブラウザのツールバーにある拡張機能アイコン（🤖）をクリックしてください。
-    </p>
-    <button id="close-settings-modal" style="
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-    ">閉じる</button>
-  `;
-  
-  const overlay = document.createElement('div');
-  overlay.id = 'ai-debate-settings-overlay';
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 9999998;
-  `;
-  
-  document.body.appendChild(overlay);
-  document.body.appendChild(modal);
-  
-  const closeModal = () => {
-    modal.remove();
-    overlay.remove();
-  };
-  
-  document.getElementById('close-settings-modal').addEventListener('click', closeModal);
-  overlay.addEventListener('click', closeModal);
 }
 
 addIndicator();
-addSettingsButton();
+// Manual Start Detection
+function attachManualStartListener() {
+  document.body.addEventListener('click', (e) => {
+    const sendBtn = document.querySelector(SELECTORS.sendButton) || document.querySelector(SELECTORS.sendButtonAlt);
+    if (sendBtn && (e.target === sendBtn || sendBtn.contains(e.target))) {
+      notifyManualStart();
+    }
+  });
+
+  document.body.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      const inputBox = document.querySelector(SELECTORS.inputBox) || document.querySelector(SELECTORS.inputBoxAlt);
+      if (inputBox && (e.target === inputBox || inputBox.contains(e.target))) {
+        notifyManualStart();
+      }
+    }
+  });
+}
+
+function notifyManualStart() {
+  setTimeout(() => {
+    chrome.runtime.sendMessage({
+      action: 'manualStart',
+      aiType: 'chatgpt'
+    }).catch(() => { });
+    waitForResponse();
+  }, 500);
+}
+
+attachManualStartListener();
